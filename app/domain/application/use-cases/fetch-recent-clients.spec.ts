@@ -1,6 +1,7 @@
 import { InMemoryClientRepository } from "@/test/repositories/in-memory-client-repository"
 import { FetchRecentClientUseCase } from "./fetch-recent-clients"
 import { makeClient } from "@/test/factories/make-client"
+import { makeUser } from "@/test/factories/make-user"
 
 describe('Fetch recent clients', () => {
     let sut: FetchRecentClientUseCase
@@ -12,15 +13,19 @@ describe('Fetch recent clients', () => {
     })
 
     it('should be able to fetch recent clients', async () => {
-        const client1 = makeClient({})
-        const client2 = makeClient({})
-        const client3 = makeClient({})
+        const user = makeUser({})
+
+        const client1 = makeClient({businessId: user.id})
+        const client2 = makeClient({businessId: user.id})
+        const client3 = makeClient({businessId: user.id})
+        const client4 = makeClient({})
 
         await clientRepository.create(client1)
         await clientRepository.create(client2)
         await clientRepository.create(client3)
+        await clientRepository.create(client4)
 
-        const result = await sut.execute({ page: 1 })
+        const result = await sut.execute({ userId: user.id.toString(), page: 1 })
 
         expect(result.isRight()).toBe(true)
         expect(result.value).toEqual({
@@ -29,13 +34,15 @@ describe('Fetch recent clients', () => {
     })
 
     it('should be able to fetch paginated clients', async () => {
+        const user = makeUser({})
+
         for(let i = 0; i < 22; i++) {
-            const client = makeClient({}, String(i))
+            const client = makeClient({businessId: user.id}, String(i))
 
             await clientRepository.create(client)
         }
 
-        const result = await sut.execute({ page: 2 })
+        const result = await sut.execute({ userId: user.id.toString(), page: 2 })
 
         expect(result.isRight()).toBe(true)
         expect(result.value?.clients).toHaveLength(2)

@@ -4,6 +4,7 @@ import { ClientRepository } from "../repositories/client-repository";
 import { Client } from "@/app/domain/enterprise/entities/client";
 
 export interface FetchRecentClientUseCaseProps {
+    userId: string
     page: number
 }
 
@@ -14,8 +15,8 @@ export class FetchRecentClientUseCase {
         private clientRepository: ClientRepository,
     ) {}
 
-    async execute({ page }: FetchRecentClientUseCaseProps): Promise<FetchRecentClientUseCaseResponse> {
-        const clients = await this.clientRepository.findManyRecent({page})
+    async execute({ page, userId }: FetchRecentClientUseCaseProps): Promise<FetchRecentClientUseCaseResponse> {
+        const clients = await this.clientRepository.findManyRecent(userId, {page})
         
         return right({ clients })
     }

@@ -2,6 +2,7 @@
 import { UniqueEntityId } from "@/app/core/entities/unique-entity-id";
 import { ClientRepository } from "../repositories/client-repository";
 import { Client } from "@/app/domain/enterprise/entities/client";
+import { Either, right } from "@/app/core/either";
 
 export interface RegisterClientUseCaseProps {
     name: string
@@ -9,6 +10,7 @@ export interface RegisterClientUseCaseProps {
     telephone?: string
     businessId: string
 }
+type RegisterClientUseCaseResponse = Either<null, unknown>
 export class RegisterClientUseCase {
     constructor(private clientRepository: ClientRepository){}
 
@@ -17,7 +19,7 @@ export class RegisterClientUseCase {
         cpf,
         telephone,
         businessId
-    }: RegisterClientUseCaseProps) {
+    }: RegisterClientUseCaseProps): Promise<RegisterClientUseCaseResponse> {
         const client = Client.create({
             name,
             cpf,
@@ -26,5 +28,7 @@ export class RegisterClientUseCase {
         })
 
         await this.clientRepository.create(client)
+
+        return right({})
     }
 }

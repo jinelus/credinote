@@ -1,5 +1,5 @@
 import { PaginationationParams } from "@/app/core/repositories/pagination-params";
-import { ClientRepository } from "@/app/domain/application/repositories/client-repository";
+import { ClientRepository, FetchClientProps } from "@/app/domain/application/repositories/client-repository";
 import { Client } from "@/app/domain/enterprise/entities/client";
 
 export class InMemoryClientRepository implements ClientRepository {
@@ -24,11 +24,25 @@ export class InMemoryClientRepository implements ClientRepository {
         return client
     }
 
-    async findManyRecent({ page}: PaginationationParams): Promise<Client[]> {
+    async findManyRecent(userId: string, { page}: PaginationationParams): Promise<Client[]> {
         const clients = this.items
+        .filter(client => client.businessId.toString() === userId)
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .slice((page - 1) * 20, page * 20)
 
         return clients
+    }
+
+    async findManyByName({query, userId}: FetchClientProps): Promise<Client[]> {
+        const clients = this.items
+        .filter(client => client.name.toLowerCase().includes(query.toLowerCase()) && client.businessId.toString() === userId)
+        .slice(0, 10)
+
+        return clients
+    }
+
+    async delete(client: Client): Promise<void> {
+        const clientIndex = this.items.findIndex(item => item.id === client.id)
+        this.items.splice(clientIndex, 1)
     }
 }

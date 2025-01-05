@@ -1,12 +1,15 @@
 import { User } from "@/app/domain/enterprise/entities/user";
 import { UserRepository } from "../repositories/user-repository";
 import { hash } from "bcryptjs";
+import { Either, right } from "@/app/core/either";
 
 export interface CreateUserUseCaseProps {
     name: string
     email: string
     password: string
 }
+
+type CreateUserUseCaseResponse = Either<null, unknown>
 export class CreateUserUseCase {
     constructor(private userRepository: UserRepository){}
 
@@ -14,7 +17,7 @@ export class CreateUserUseCase {
         name,
         email,
         password
-    }: CreateUserUseCaseProps) {
+    }: CreateUserUseCaseProps): Promise<CreateUserUseCaseResponse> {
         const user = User.create({
             name, 
             email, 
@@ -22,5 +25,7 @@ export class CreateUserUseCase {
         })
 
         await this.userRepository.create(user)
+
+        return right({})
     }
 }

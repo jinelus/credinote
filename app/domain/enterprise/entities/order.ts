@@ -12,16 +12,21 @@ export interface OrderProps {
 
 export class Order extends Entity<OrderProps> {
     
-    static create(props: Optional<OrderProps, 'date'>, id?: string) {
+    static create(props: Optional<OrderProps, 'date' | 'status'>, id?: string) {
         const order = new Order({
             ...props,
-            date: props.date ?? new Date()
+            date: props.date ?? new Date(),
+            status: props.status ?? 'UNPAID'
         }, id)
         return order
     }
 
     get idClient() {
         return this.props.idClient
+    }
+
+    set idClient(idClient: UniqueEntityId) {
+        this.props.idClient = idClient
     }
 
     get date() {
@@ -36,11 +41,23 @@ export class Order extends Entity<OrderProps> {
         return this.props.total
     }
 
+    set total(total: number) {
+        this.props.total = total
+    }
+
     get status() {
         return this.props.status
     }
 
     set status(status: 'PAID' | 'UNPAID') {
         this.props.status = status
+    }
+
+    get datePaid(): Date | undefined {
+        return this.props.datePaid
+    }
+
+    set datePaid(datePaid: Date) {
+        this.props.datePaid = datePaid
     }
 }

@@ -9,14 +9,16 @@ export interface ClientProps {
     telephone?: string
     createdAt: Date
     businessId: UniqueEntityId
+    amount: number
 }
 
 export class Client extends Entity<ClientProps> {
     
-    static create(props: Optional<ClientProps, 'createdAt'>, id?: string) {
+    static create(props: Optional<ClientProps, 'createdAt' | 'amount'>, id?: string) {
         const client = new Client({
             ...props,
-            createdAt: props.createdAt ?? new Date()
+            createdAt: props.createdAt ?? new Date(),
+            amount: props.amount ?? 0
         }, id)
 
         return client
@@ -56,6 +58,14 @@ export class Client extends Entity<ClientProps> {
 
     set businessId(businessId: string) {
         this.props.businessId = new UniqueEntityId(businessId)
+    }
+
+    get amount() {
+        return this.props.amount
+    }
+
+    set amount(amount: number) {
+        this.props.amount = amount
     }
 
 }

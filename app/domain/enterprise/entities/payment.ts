@@ -31,8 +31,16 @@ export class Payment extends Entity<PaymentProps> {
         return this.props.amount
     }
 
+    set amount(amount: number) {
+        this.props.amount = amount
+    }
+
     get method() {
         return this.props.method
+    }
+
+    set method(method: 'CASH' | 'CARD' | 'PIX') {
+        this.props.method = method
     }
 
 }
