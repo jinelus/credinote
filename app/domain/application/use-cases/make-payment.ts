@@ -4,6 +4,7 @@ import { PaymentRepository } from "../repositories/payment-repository"
 import { ClientRepository } from "../repositories/client-repository"
 import { UniqueEntityId } from "@/app/core/entities/unique-entity-id"
 import { Payment } from "../../enterprise/entities/payment"
+import { AmountInvalidError } from "./errors/amount-invalid-error"
 
 export interface MakePaymentUseCaseProps {
     idClient: string
@@ -11,7 +12,7 @@ export interface MakePaymentUseCaseProps {
     method: 'CASH' | 'CARD' | 'PIX'
 }
 
-type MakePaymentUseCaseResponse = Either<RessourceNotFoundError, unknown>
+type MakePaymentUseCaseResponse = Either<RessourceNotFoundError | AmountInvalidError, unknown>
 
 export class MakePaymentUseCase {
     constructor(
@@ -25,6 +26,10 @@ export class MakePaymentUseCase {
 
         if (!client) {
             return left(new RessourceNotFoundError())
+        }
+
+        if (client.amount < amount || client.amount === 0 || amount <= 0) {
+            return left(new AmountInvalidError())
         }
 
         const payment = Payment.create({ idClient: new UniqueEntityId(idClient), amount, method })
