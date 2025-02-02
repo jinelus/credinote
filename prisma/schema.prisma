@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum OrderStatus {
+  UNPAID
+  PAID
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  PIX
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  role      UserRole @default(USER)
+  clients   Client[]
+
+  @@map("users")
+}
+
+model Client {
+  id         String    @id @default(uuid())
+  name       String
+  cpf        String    @unique
+  telephone  String
+  createdAt  DateTime  @default(now()) @map("created_at")
+  amount     Float
+  businessId String    @unique @map("business_id")
+  Order      Order[]
+  Payment    Payment[]
+
+  business User @relation(fields: [businessId], references: [id])
+
+  @@map("clients")
+}
+
+model Order {
+  id       String      @id @default(uuid())
+  date     DateTime    @default(now())
+  total    Float
+  status   OrderStatus @default(UNPAID)
+  datePaid DateTime    @default(now()) @map("date_paid")
+  idClient String      @map("id_client")
+
+  client Client @relation(fields: [idClient], references: [id])
+
+  @@map("orders")
+}
+
+model Payment {
+  id       String        @id @default(uuid())
+  idClient String        @map("id_client")
+  amount   Float
+  method   PaymentMethod @default(CASH)
+  paidAt   DateTime      @map("paid_at")
+
+  client Client @relation(fields: [idClient], references: [id])
+
+  @@map("payments")
+}
