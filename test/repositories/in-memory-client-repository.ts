@@ -1,6 +1,6 @@
-import { PaginationationParams } from "@/app/core/repositories/pagination-params";
-import { ClientRepository, FetchClientProps } from "@/app/domain/application/repositories/client-repository";
-import { Client } from "@/app/domain/enterprise/entities/client";
+import { PaginationationParams } from "@/src/core/repositories/pagination-params";
+import { ClientRepository, FetchClientProps } from "@/src/domain/application/repositories/client-repository";
+import { Client } from "@/src/domain/enterprise/entities/client";
 
 export class InMemoryClientRepository implements ClientRepository {
     public items: Client[] = [];
