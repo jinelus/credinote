@@ -1,5 +1,6 @@
-import { UserRepository } from "@/app/domain/application/repositories/user-repository";
-import { User } from "@/app/domain/enterprise/entities/user";
+import { UserRepository } from "@/src/domain/application/repositories/user-repository"
+import { User } from "@/src/domain/enterprise/entities/user"
+
 
 export class InMemoryUserRepository implements UserRepository {
 

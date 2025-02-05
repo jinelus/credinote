@@ -1,7 +1,9 @@
-import { OrderRepository } from "@/app/domain/application/repositories/order-repository";
-import { Order } from "@/app/domain/enterprise/entities/order";
+import { OrderRepository } from "@/src/domain/application/repositories/order-repository"
+import { Order } from "@/src/domain/enterprise/entities/order"
+
 
 export class InMemoryOrderRepository implements OrderRepository {
+    
     public items: Order[] = []
 
     async create(order: Order): Promise<void> {
@@ -20,5 +22,9 @@ export class InMemoryOrderRepository implements OrderRepository {
     async delete(order: Order): Promise<void> {
         const orderIndex = this.items.findIndex(item => item.id === order.id)
         this.items.splice(orderIndex, 1)
+    }
+
+    async findOrdersByClient(clientId: string): Promise<Order[]> {
+        return this.items.filter(item => item.idClient.toString() === clientId)
     }
 }
