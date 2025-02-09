@@ -2,6 +2,7 @@ import { OrderRepository } from "@/src/domain/application/repositories/order-rep
 import { Order } from "@/src/domain/enterprise/entities/order";
 import { prisma } from "../prisma-service";
 import { PrismaOrderMapper } from "../mappers/prisma-order-mapper";
+import { PaginationationParams } from "@/src/core/repositories/pagination-params";
 
 export class PrismaOrderRepository implements OrderRepository {
     async create(order: Order): Promise<void> {
@@ -20,11 +21,13 @@ export class PrismaOrderRepository implements OrderRepository {
 
         return PrismaOrderMapper.toDomain(order)
     }
-    async findOrdersByClient(clientId: string): Promise<Order[]> {
+    async findOrdersByClient(clientId: string, { page }: PaginationationParams): Promise<Order[]> {
         const orders = await prisma.order.findMany({
             where: {
                 idClient: clientId
-            }
+            },
+            take: 20,
+            skip: (page - 1) * 20
         })
 
         return orders.map(PrismaOrderMapper.toDomain)
