@@ -2,6 +2,6 @@
 
 export default function Home() {
   return (
-    <main>JCB Mercado</main>
+    <main className="text-4xl font-bold">JCB Mercado</main>
   );
 }
