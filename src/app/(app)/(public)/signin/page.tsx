@@ -1,6 +1,6 @@
 import Image from "next/image";
 import loginImg from "@/public/signin.jpg"
-import SignInForm from "@/src/components/signin-form";
+import SignInForm from "@/src/components/forms/signin-form";
 
 export default function SignIn() {
 
