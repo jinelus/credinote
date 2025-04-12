@@ -7,7 +7,7 @@ export function makeClient(override: Partial<ClientProps>, id?: string) {
         name: faker.person.fullName(),
         cpf: faker.number.toString(),
         telephone: faker.phone.number(),
-        businessId: new UniqueEntityId(),
+        organizationId: new UniqueEntityId(),
         ...override
     }, id)
 

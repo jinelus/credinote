@@ -26,7 +26,7 @@ export class InMemoryClientRepository implements ClientRepository {
 
     async findManyRecent(userId: string, { page}: PaginationationParams): Promise<Client[]> {
         const clients = this.items
-        .filter(client => client.businessId.toString() === userId)
+        .filter(client => client.organizationId.toString() === userId)
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .slice((page - 1) * 20, page * 20)
 
@@ -35,7 +35,7 @@ export class InMemoryClientRepository implements ClientRepository {
 
     async findManyByName({query, userId}: FetchClientProps): Promise<Client[]> {
         const clients = this.items
-        .filter(client => client.name.toLowerCase().includes(query.toLowerCase()) && client.businessId.toString() === userId)
+        .filter(client => client.name.toLowerCase().includes(query.toLowerCase()) && client.organizationId.toString() === userId)
         .slice(0, 10)
 
         return clients
