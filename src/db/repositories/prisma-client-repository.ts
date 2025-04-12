@@ -33,7 +33,7 @@ export class PrismaClientRepository implements ClientRepository {
     async findManyRecent(userId: string, { page }: PaginationationParams): Promise<Client[]> {
         const clients = await prisma.client.findMany({
             where: {
-                businessId: userId
+                organizationId: userId
             },
             take: 20,
             skip: (page - 1) * 20,
@@ -47,7 +47,7 @@ export class PrismaClientRepository implements ClientRepository {
     async findManyByName({ query, userId }: FetchClientProps): Promise<Client[]> {
         const clients = await prisma.client.findMany({
             where: {
-                businessId: userId,
+                organizationId: userId,
                 name: {
                     contains: query,
                     mode: "insensitive"

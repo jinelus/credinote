@@ -10,7 +10,7 @@ export class PrismaClientMapper {
             name: client.name,
             cpf: client.cpf,
             telephone: client.telephone,
-            businessId: new UniqueEntityId(client.businessId),
+            organizationId: new UniqueEntityId(client.organizationId),
             amount: client.amount
         }, client.id)
     }
@@ -22,7 +22,7 @@ export class PrismaClientMapper {
             name: client.name,
             cpf: client.cpf,
             telephone: client.telephone,
-            businessId: client.businessId.toString(),
+            organizationId: client.organizationId.toString(),
             amount: client.amount
         }
     }
