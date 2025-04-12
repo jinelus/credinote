@@ -8,6 +8,7 @@ import { RessourceNotFoundError } from "@/src/core/errors/ressource-not-found-er
 export interface CreateOrderUseCaseProps {
         idClient: string
         total: number
+        description: string
 }
 
 type CreateOrderUseCaseResponse = Either<RessourceNotFoundError, unknown>

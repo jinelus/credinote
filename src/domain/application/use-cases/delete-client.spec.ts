@@ -16,7 +16,7 @@ describe('Delete client use case', () => {
     it('should be able to delete a client', async () => {
         const user = makeClient({})
 
-        const client = makeClient({ businessId: user.id })
+        const client = makeClient({ organizationId: user.id })
         await clientRepository.create(client)
 
         const result = await sut.execute({

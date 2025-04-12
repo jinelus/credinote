@@ -21,7 +21,7 @@ export class DeleteClientUseCase {
             return left(new RessourceNotFoundError())
         }
 
-        if(client.businessId.toString() !== userId) {
+        if(client.organizationId.toString() !== userId) {
             return left(new NotAllowedError())
         }
 

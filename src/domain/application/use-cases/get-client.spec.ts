@@ -17,7 +17,7 @@ describe('Get client', () => {
     it('should be able to get a client', async () => {
         const user = makeUser({})
 
-        const client = makeClient({ businessId: user.id })
+        const client = makeClient({ organizationId: user.id })
         clientRepository.create(client)
 
         const result = await sut.execute({
@@ -32,7 +32,7 @@ describe('Get client', () => {
     it('should not be able to get a client', async () => {
         const user = makeUser({})
 
-        const client = makeClient({ businessId: user.id })
+        const client = makeClient({ organizationId: user.id })
 
         const result = await sut.execute({
             clientId: client.id.toString(),

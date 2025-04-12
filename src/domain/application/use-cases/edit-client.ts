@@ -9,7 +9,7 @@ export interface EditClientUseCaseProps {
     name: string
     cpf: string
     telephone?: string
-    businessId: string
+    organizationId: string
 }
 
 type EditClientUseCaseResponse = Either<RessourceNotFoundError | NotAllowedError, { client: Client }>
@@ -20,7 +20,7 @@ export class EditClientUseCase {
         name,
         cpf,
         telephone,
-        businessId,
+        organizationId,
         clientId
     }: EditClientUseCaseProps): Promise<EditClientUseCaseResponse> {
         const client = await this.clientRepository.findById(clientId)
@@ -29,7 +29,7 @@ export class EditClientUseCase {
             return left(new RessourceNotFoundError())
         }
 
-        if(client.businessId.toString() !== businessId){
+        if(client.organizationId.toString() !== organizationId){
             return left(new NotAllowedError())
         }
 

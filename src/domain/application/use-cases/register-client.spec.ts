@@ -18,7 +18,7 @@ describe('Register client', () => {
             name: 'John Doe',
             cpf: '12345678901',
             telephone: '12345678901',
-            businessId: user.id.toString()
+            organizationId: user.id.toString()
         })
 
         expect(clientRepository.items).toHaveLength(1)

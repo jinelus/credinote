@@ -15,9 +15,9 @@ describe('Fetch recent clients', () => {
     it('should be able to fetch recent clients', async () => {
         const user = makeUser({})
 
-        const client1 = makeClient({businessId: user.id})
-        const client2 = makeClient({businessId: user.id})
-        const client3 = makeClient({businessId: user.id})
+        const client1 = makeClient({organizationId: user.id})
+        const client2 = makeClient({organizationId: user.id})
+        const client3 = makeClient({organizationId: user.id})
         const client4 = makeClient({})
 
         await clientRepository.create(client1)
@@ -37,7 +37,7 @@ describe('Fetch recent clients', () => {
         const user = makeUser({})
 
         for(let i = 0; i < 22; i++) {
-            const client = makeClient({businessId: user.id}, String(i))
+            const client = makeClient({organizationId: user.id}, String(i))
 
             await clientRepository.create(client)
         }

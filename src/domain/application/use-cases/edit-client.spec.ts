@@ -16,13 +16,13 @@ describe('Edit client use case', () => {
     it('should be able to edit a client', async () => {
         const user = makeUser({})
 
-        const client = makeClient({ businessId: user.id })
+        const client = makeClient({ organizationId: user.id })
         await clientRepository.create(client)
 
         const result = await sut.execute({
             name: 'John Doe',
             cpf: client.cpf,
-            businessId: user.id.toString(),
+            organizationId: user.id.toString(),
             clientId: client.id.toString()
         })
 
@@ -33,13 +33,13 @@ describe('Edit client use case', () => {
     it('should not be able to edit a client', async () => {
         const user = makeUser({})
 
-        const client = makeClient({ businessId: user.id })
+        const client = makeClient({ organizationId: user.id })
         await clientRepository.create(client)
 
         const result = await sut.execute({
             name: 'John Doe',
             cpf: client.cpf,
-            businessId: 'invalid-id',
+            organizationId: 'invalid-id',
             clientId: client.id.toString()
         })
 

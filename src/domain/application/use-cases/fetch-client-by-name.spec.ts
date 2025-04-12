@@ -14,7 +14,7 @@ describe('Fetch recent clients', () => {
     it('should be able to fetch recent clients', async () => {
         const user = makeClient({})
 
-        const client1 = makeClient({name: 'John Doe', businessId: user.id})
+        const client1 = makeClient({name: 'John Doe', organizationId: user.id})
 
         await clientRepository.create(client1)
         const result = await sut.execute({ query:  'john', userId: user.id.toString() })
@@ -29,7 +29,7 @@ describe('Fetch recent clients', () => {
         const user = makeClient({})
 
         for(let i = 0; i < 22; i++) {
-            const client = makeClient({name: 'John Doe', businessId: user.id}, String(i))
+            const client = makeClient({name: 'John Doe', organizationId: user.id}, String(i))
 
             await clientRepository.create(client)
         }
