@@ -8,7 +8,7 @@ export interface ClientProps {
     cpf: string
     telephone?: string
     createdAt: Date
-    businessId: UniqueEntityId
+    organizationId: UniqueEntityId
     amount: number
 }
 
@@ -52,12 +52,12 @@ export class Client extends Entity<ClientProps> {
         return this.props.createdAt
     }
 
-    get businessId() {
-        return this.props.businessId.toString()
+    get organizationId() {
+        return this.props.organizationId.toString()
     }
 
-    set businessId(businessId: string) {
-        this.props.businessId = new UniqueEntityId(businessId)
+    set organizationId(organizationId: string) {
+        this.props.organizationId = new UniqueEntityId(organizationId)
     }
 
     get amount() {

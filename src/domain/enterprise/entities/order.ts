@@ -4,6 +4,7 @@ import { Optional } from "@/src/core/types/optional"
 
 export interface OrderProps {
     idClient: UniqueEntityId
+    description: string
     date: Date
     total: number
     status: 'PAID' | 'UNPAID'
@@ -12,11 +13,12 @@ export interface OrderProps {
 
 export class Order extends Entity<OrderProps> {
     
-    static create(props: Optional<OrderProps, 'date' | 'status'>, id?: string) {
+    static create(props: Optional<OrderProps, 'date' | 'status' | 'description'>, id?: string) {
         const order = new Order({
             ...props,
             date: props.date ?? new Date(),
-            status: props.status ?? 'UNPAID'
+            status: props.status ?? 'UNPAID',
+            description: props.description ?? ''
         }, id)
         return order
     }
@@ -60,4 +62,13 @@ export class Order extends Entity<OrderProps> {
     set datePaid(datePaid: Date) {
         this.props.datePaid = datePaid
     }
+
+    get description() {
+        return this.props.description
+    }   
+
+    set description(description: string) {
+        this.props.description = description
+    }
+    
 }
