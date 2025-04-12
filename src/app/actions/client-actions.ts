@@ -7,27 +7,29 @@ import { DeleteClientUseCase, DeleteClientUseCaseProps } from "@/src/domain/appl
 import { FetchClientByNameUseCase, FetchClientByNameUseCaseProps } from "@/src/domain/application/use-cases/fetch-client-by-name"
 import { GetClientUseCase, GetClientUseCaseProps } from "@/src/domain/application/use-cases/get-client"
 import { FetchRecentClientUseCase } from "@/src/domain/application/use-cases/fetch-recent-clients"
-
+import { PrismaUserRepository } from "@/src/db/repositories/prisma-user-repository"
 
 const clientRepository = new PrismaClientRepository()
+const userRepository = new PrismaUserRepository()
+
 export async function registerClient(client: RegisterClientUseCaseProps ) {
 
-    const { name, cpf, telephone, businessId } = client
+    const { name, cpf, telephone, organizationId } = client
 
-    const registerClientUseCase = new RegisterClientUseCase(clientRepository)
+    const registerClientUseCase = new RegisterClientUseCase(clientRepository, userRepository)
 
     await registerClientUseCase.execute({
         name,
         cpf,
         telephone,
-        businessId
+        organizationId
     })
 
 }
 
 export async function editClient(client: EditClientUseCaseProps) {
 
-    const { name, cpf, telephone, businessId, clientId } = client
+    const { name, cpf, telephone, organizationId, clientId } = client
    
     const editClientUseCase = new EditClientUseCase(clientRepository)
 
@@ -36,7 +38,7 @@ export async function editClient(client: EditClientUseCaseProps) {
         name,
         cpf,
         telephone,        
-        businessId
+        organizationId
     })
 
     if(response.isLeft()) {
