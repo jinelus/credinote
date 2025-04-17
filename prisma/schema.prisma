@@ -42,17 +42,17 @@ model User {
 }
 
 model Client {
-  id         String    @id @default(uuid())
-  name       String
-  cpf        String    @unique
-  telephone  String
-  createdAt  DateTime  @default(now()) @map("created_at")
-  amount     Float
-  businessId String    @unique @map("business_id")
-  Order      Order[]
-  Payment    Payment[]
+  id             String    @id @default(uuid())
+  name           String
+  cpf            String    @unique
+  telephone      String
+  createdAt      DateTime  @default(now()) @map("created_at")
+  amount         Float
+  organizationId String    @unique @map("business_id")
+  Order          Order[]
+  Payment        Payment[]
 
-  business User @relation(fields: [businessId], references: [id])
+  business User @relation(fields: [organizationId], references: [id])
 
   @@map("clients")
 }

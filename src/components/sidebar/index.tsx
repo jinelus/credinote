@@ -10,27 +10,27 @@ export const Sidebar = () => {
     const navLinks = [
         {
             label: 'Dashboard',
-            href: '#',
+            href: '/',
             icon: <House />
         },
         {
             label: 'Novo cliente',
-            href: '#',
+            href: '/novo-cliente',
             icon: <UserPlus />
         },
         {
             label: 'Clientes',
-            href: '#',
+            href: '/clientes',
             icon: <Users />
         },
         {
             label: 'Compras',
-            href: '#',
+            href: '/compras',
             icon: <ShoppingCart />
         },
         {
             label: 'Relatorios',
-            href: '#',
+            href: '/relatorios',
             icon: <FileText />
         }
     ]
