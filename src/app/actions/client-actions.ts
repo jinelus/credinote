@@ -1,53 +1,89 @@
 'use server'
 
+import { prisma } from "@/src/db/prisma";
 
-// export async function registerClient(client: RegisterClientUseCaseProps ) {
+export interface RegisterClientProps {
+    name: string;
+    cpf: string;
+    telephone?: string;
+    organizationId: string;
+}
 
-//     const { name, cpf, telephone, organizationId } = client
+export interface EditClientUseCaseProps {
+    organizationId: string;
+    clientId: string;
+    name: string;
+    telephone?: string;
+}
 
-//     const registerClientUseCase = new RegisterClientUseCase(clientRepository, userRepository)
+export interface DeleteClientUseCaseProps {
+    organizationId: string;
+    clientId: string;
+}
 
-//     await registerClientUseCase.execute({
-//         name,
-//         cpf,
-//         telephone,
-//         organizationId
-//     })
 
-// }
+export async function registerClient(client: RegisterClientProps ) {
 
-// export async function editClient(client: EditClientUseCaseProps) {
+    const { name, cpf, telephone, organizationId } = client
 
-//     const { name, cpf, telephone, organizationId, clientId } = client
-   
-//     const editClientUseCase = new EditClientUseCase(clientRepository)
+    const createdClient = await prisma.client.create({
+        data: {
+            name,
+            cpf,
+            telephone: telephone || '',
+            businessId: organizationId,
+            amount: 0,
+        }
+    })
 
-//     const response = await editClientUseCase.execute({
-//         clientId,
-//         name,
-//         cpf,
-//         telephone,        
-//         organizationId
-//     })
+    return createdClient
+}
 
-//     if(response.isLeft()) {
-//         return response.value
-//     }
-// }
+export async function editClient(client: EditClientUseCaseProps) {
 
-// export async function deleteClient({ clientId, userId }: DeleteClientUseCaseProps) {
+    const { name, telephone, clientId, organizationId } = client
 
-//     const deleteClientUseCase = new DeleteClientUseCase(clientRepository)
+    const organization = await prisma.user.findUnique({
+        where: {
+            id: organizationId
+        }
+    })
 
-//     const response = await deleteClientUseCase.execute({
-//         clientId,
-//         userId
-//     })
+    if(!organization) {
+        return null
+    }
 
-//     if(response.isLeft()) {
-//         return response.value
-//     }
-// }
+    const updatedClient = await prisma.client.update({
+        where: {
+            id: clientId
+        },
+        data: {
+            name,
+            telephone
+        }
+    })
+    
+    return updatedClient
+}
+
+export async function deleteClient({ clientId, organizationId }: DeleteClientUseCaseProps) {
+
+    const organization = await prisma.user.findUnique({
+        where: {
+            id: organizationId
+        }
+    })
+
+    if(!organization) {
+        return null
+    }
+
+    await prisma.client.delete({
+        where: {
+            id: clientId
+        }
+    })
+}
 
 // export async function fetchClientByName({ userId, query }: FetchClientByNameUseCaseProps) {
 

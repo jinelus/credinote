@@ -3,10 +3,10 @@
 import { useRouter } from 'next/navigation'
 import { Input } from '@/src/components/base-components/input'
 import Button from '@/src/components/base-components/button'
-import { registerClient } from '@/src/app/actions/client-actions'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { registerClient } from '@/src/app/actions/client-actions'
 
 const clientSchema = z.object({
   name: z.string().min(3, { message: 'O nome deve ter pelo menos 3 caracteres' }),
@@ -46,7 +46,7 @@ export default function CreateClientForm() {
     <div className="max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-8 text-slate-800">Novo Cliente</h1>
       
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-14">
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col gap-2">

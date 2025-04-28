@@ -14,6 +14,12 @@ export const Sidebar = () => {
             icon: <House />
         },
         {
+
+            label: 'Novo compra',
+            href: '/novo-compra',
+            icon: <ShoppingCart />
+        },
+        {
             label: 'Novo cliente',
             href: '/novo-cliente',
             icon: <UserPlus />
@@ -49,7 +55,7 @@ export const Sidebar = () => {
                         <li key={link.label + i} className="w-full">
                             <Link href={link.href} className="w-full flex items-center gap-2.5 py-4 px-10 text-slate-800 font-semibold hover:bg-slate-200">
                                 {link.icon}
-                                <span>{link.label}</span>
+                                <span className="hidden sm:flex">{link.label}</span>
                             </Link>
                         </li>
                     ))}
