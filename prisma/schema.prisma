@@ -49,11 +49,11 @@ model Client {
   telephone      String
   createdAt      DateTime  @default(now()) @map("created_at")
   amount         Float
-  organizationId String    @unique @map("business_id")
+  organizationId String    @unique @map("organization_id")
   Order          Order[]
   Payment        Payment[]
 
-  business Organization @relation(fields: [organizationId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
 
   @@map("clients")
 }

@@ -31,7 +31,7 @@ export async function registerClient(client: RegisterClientProps ) {
             name,
             cpf,
             telephone: telephone || '',
-            businessId: organizationId,
+            organizationId,
             amount: 0,
         }
     })
@@ -43,7 +43,7 @@ export async function editClient(client: EditClientUseCaseProps) {
 
     const { name, telephone, clientId, organizationId } = client
 
-    const organization = await prisma.user.findUnique({
+    const organization = await prisma.organization.findUnique({
         where: {
             id: organizationId
         }
@@ -68,7 +68,7 @@ export async function editClient(client: EditClientUseCaseProps) {
 
 export async function deleteClient({ clientId, organizationId }: DeleteClientUseCaseProps) {
 
-    const organization = await prisma.user.findUnique({
+    const organization = await prisma.organization.findUnique({
         where: {
             id: organizationId
         }
