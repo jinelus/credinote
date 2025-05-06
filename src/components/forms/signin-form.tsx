@@ -5,7 +5,6 @@ import Button from "../base-components/button";
 import { Input } from "../base-components/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -26,17 +25,7 @@ export default function SignInForm() {
 
     const onSubmit = async (data: FormData) => {
         try {
-            const result = await signIn('credentials', {
-                email: data.email,
-                password: data.password,
-                redirect: false,
-            });
-
-            if (result?.error) {
-                setError(result.error);
-                return;
-            }
-
+            console.log(data)
             router.push('/');
             router.refresh();
         } catch (err: unknown) {
