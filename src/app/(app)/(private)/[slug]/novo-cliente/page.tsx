@@ -2,12 +2,14 @@ import { Container } from '@/src/components/base-components/container'
 import CreateClientForm from '@/src/components/forms/create-client'
 
 
-export default function ClientPage() {
+export default async function ClientPage({ params }: { params: Promise<{ slug: string }>}) {
+
+  const slug = (await params).slug
 
 
   return (
     <Container className="min-h-screen">
-      <CreateClientForm />
+      <CreateClientForm slug={slug} />
     </Container>
   )
 }

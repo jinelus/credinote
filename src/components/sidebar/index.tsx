@@ -1,42 +1,32 @@
 'use client'
 
-import { FileText, House, ShoppingCart, UserPlus, Users, X } from "lucide-react"
+import { FileText, House, ShoppingCart, Users, X } from "lucide-react"
 import Link from "next/link"
 import { useNav } from "../navbar/nav-context"
 
 
-export const Sidebar = () => {
+export const Sidebar = ({ slug }: { slug: string }) => {
+
 
     const navLinks = [
         {
             label: 'Dashboard',
-            href: '/',
+            href: `/${slug}/`,
             icon: <House />
         },
         {
-
-            label: 'Novo compra',
-            href: '/novo-compra',
-            icon: <ShoppingCart />
-        },
-        {
-            label: 'Novo cliente',
-            href: '/novo-cliente',
-            icon: <UserPlus />
-        },
-        {
             label: 'Clientes',
-            href: '/clientes',
+            href: `/${slug}/clientes`,
             icon: <Users />
         },
         {
             label: 'Compras',
-            href: '/compras',
+            href: `/${slug}/compras`,
             icon: <ShoppingCart />
         },
         {
             label: 'Relatorios',
-            href: '/relatorios',
+            href: `/${slug}/relatorios`,
             icon: <FileText />
         }
     ]

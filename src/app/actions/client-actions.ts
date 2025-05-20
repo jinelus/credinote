@@ -6,7 +6,7 @@ export interface RegisterClientProps {
     name: string;
     cpf: string;
     telephone?: string;
-    organizationId: string;
+    slug: string;
 }
 
 export interface EditClientUseCaseProps {
@@ -21,17 +21,39 @@ export interface DeleteClientUseCaseProps {
     clientId: string;
 }
 
+export interface FetchClientsParams {
+    slug: string
+    params: {
+        page?: number
+    }
+}
+
+export interface GetClientByCpfParams {
+    slug: string
+    cpf: string
+}
+
 
 export async function registerClient(client: RegisterClientProps ) {
 
-    const { name, cpf, telephone, organizationId } = client
+    const { name, cpf, telephone, slug } = client
+
+    const organization = await prisma.organization.findUnique({
+        where: {
+            slug
+        }
+    })
+
+    if (!organization) {
+        throw new Error('Organization not found')
+    }
 
     const createdClient = await prisma.client.create({
         data: {
             name,
             cpf,
             telephone: telephone || '',
-            organizationId,
+            organizationId: organization.id,
             amount: 0,
         }
     })
@@ -83,6 +105,56 @@ export async function deleteClient({ clientId, organizationId }: DeleteClientUse
             id: clientId
         }
     })
+}
+
+export async function fetchClients({ slug, params }: FetchClientsParams) {
+    const organization = await prisma.organization.findUnique({
+        where: {
+            slug,
+        }
+    })
+
+    if (!organization) {
+        return null
+    }
+
+    const { page = 1 } = params
+
+    const clients = await prisma.client.findMany({
+        where: {
+            organizationId: organization.id
+        },
+        skip: (page - 1) * 10,
+        take: 10,
+        orderBy: {
+            createdAt: 'desc'
+        }
+    })
+
+    return clients
+}
+
+export async function getClientByCpf({ slug, cpf }: GetClientByCpfParams) {
+    const organization = await prisma.organization.findUnique({
+        where: { slug }
+    })
+
+    if (!organization) {
+        return null
+    }
+
+    const client = await prisma.client.findUnique({
+        where: {
+            cpf,
+            organizationId: organization.id
+        },
+        select: {
+            id: true,
+            name: true
+        }
+    })
+
+    return client
 }
 
 // export async function fetchClientByName({ userId, query }: FetchClientByNameUseCaseProps) {

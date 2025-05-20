@@ -8,12 +8,16 @@ import { OrderStatus, PaymentMethod } from '@prisma/client'
 import Button from '../base-components/button'
 import { Input } from '../base-components/input'
 import { Search } from 'lucide-react'
+import Spinner from '../base-components/spinner'
+import { getClientByCpf } from '@/src/app/actions/client-actions'
+import { useState } from 'react'
 
 const formSchema = z.object({
   total: z.string().min(1, 'O valor é obrigatório'),
   status: z.nativeEnum(OrderStatus),
   paymentMethod: z.nativeEnum(PaymentMethod),
   clientId: z.string().min(1, 'O cliente é obrigatório'),
+  clientName: z.string(),
   clientCpf: z.string().min(11, 'CPF inválido'),
 })
 
@@ -25,18 +29,9 @@ async function createOrder(data: FormValues) {
   return { success: true }
 }
 
-// Simulação de busca de cliente - será substituída posteriormente
-async function searchClient(cpf: string) {
-  console.log('Buscando cliente com CPF:', cpf)
-  return {
-    id: '1',
-    name: 'Cliente Exemplo',
-    cpf: cpf,
-    telephone: '(00) 00000-0000',
-  }
-}
 
-export default function CreateOrderForm() {
+export default function CreateOrderForm({ slug }: { slug: string }) {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const router = useRouter()
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -45,19 +40,31 @@ export default function CreateOrderForm() {
       status: OrderStatus.UNPAID,
       paymentMethod: PaymentMethod.CASH,
       clientId: '',
+      clientName: '',
       clientCpf: '',
     },
   })
 
   const handleCpfSearch = async () => {
+    setIsLoading(true)
     const cpf = form.getValues('clientCpf')
     if (cpf.length === 11) {
       try {
-        const client = await searchClient(cpf)
+        const client = await getClientByCpf({
+          cpf,
+          slug,
+        })
+
+        if (!client) {
+          return
+        }
+
         form.setValue('clientId', client.id)
-        // Aqui você pode adicionar mais campos do cliente que serão exibidos
+        form.setValue('clientName', client.name)
       } catch (error) {
         console.error('Erro ao buscar cliente:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
   }
@@ -92,10 +99,10 @@ export default function CreateOrderForm() {
               <Button
                 type="button"
                 onClick={handleCpfSearch}
-                disabled={form.formState.isSubmitting}
+                disabled={isLoading}
                 className='flex w-10 items-center justify-center'
               >
-                <Search className='text-white text-xl' />
+                {isLoading ? <Spinner /> : <Search className='text-white text-xl' />}
               </Button>
             </div>
             {form.formState.errors.clientCpf && (
@@ -113,8 +120,9 @@ export default function CreateOrderForm() {
             <Input
               id="clientName"
               type="text"
+              className='bg-gray-200 border-gray-200 text-gray-800'
               disabled
-              value={form.watch('clientId') ? 'Cliente Exemplo' : ''}
+              value={form.watch('clientName')}
             />
           </div>
 

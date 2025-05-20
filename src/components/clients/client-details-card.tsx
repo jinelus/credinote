@@ -1,32 +1,24 @@
-'use client'
-
 import { Card } from '@/src/components/base-components/card'
 import Button from '@/src/components/base-components/button'
-import { useRouter } from 'next/navigation'
 import { User, X } from 'lucide-react'
+import Link from 'next/link'
 
 interface Client {
   id: string
   name: string
   cpf: string
-  phone: string
-  address: string
-  ordersCount: number
-  totalSpent: number
-  createdAt?: string
+  telephone: string
+  amount: number
 }
 
 interface ClientDetailsCardProps {
   client: Client
   currentPage: string
+  slug: string
 }
 
-export function ClientDetailsCard({ client, currentPage }: ClientDetailsCardProps) {
-  const router = useRouter()
+export function ClientDetailsCard({ client, currentPage, slug }: ClientDetailsCardProps) {
 
-  const handleClose = () => {
-    router.push(`/clientes?page=${currentPage}`)
-  }
 
   return (
     <div className="lg:w-96 w-full">
@@ -34,12 +26,13 @@ export function ClientDetailsCard({ client, currentPage }: ClientDetailsCardProp
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-slate-800">Detalhes do Cliente</h2>
-            <button
-              onClick={handleClose}
-              className="text-slate-400 hover:text-slate-500"
-            >
-              <X className="h-5 w-5" />
-            </button>
+            <Link href={`/${slug}/clientes?page=${currentPage}`}>
+              <button
+                className="text-slate-400 hover:text-slate-500"
+                >
+                <X className="h-5 w-5" />
+              </button>
+              </Link>
           </div>
 
           <div className="space-y-6">
@@ -49,7 +42,6 @@ export function ClientDetailsCard({ client, currentPage }: ClientDetailsCardProp
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-slate-900">{client.name}</h3>
-                <p className="text-sm text-slate-500">Cliente desde {client.createdAt}</p>
               </div>
             </div>
 
@@ -60,27 +52,24 @@ export function ClientDetailsCard({ client, currentPage }: ClientDetailsCardProp
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700">Telefone</label>
-                <p className="mt-1 text-sm text-slate-900">{client.phone}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700">Total de Pedidos</label>
-                <p className="mt-1 text-sm text-slate-900">{client.ordersCount}</p>
+                <p className="mt-1 text-sm text-slate-900">{client.telephone}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700">Total Gasto</label>
                 <p className="mt-1 text-sm text-slate-900">
-                  R$ {client.totalSpent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  R$ {client.amount}
                 </p>
               </div>
             </div>
 
             <div className="pt-6">
-              <Button
-                onClick={() => router.push('/novo-pedido')}
-                className="w-full bg-slate-800 text-white hover:bg-slate-900"
-              >
-                Novo Pedido
-              </Button>
+              <Link href={`/${slug}/nova-compra`}>
+                <Button
+                  className="w-full bg-slate-800 text-white hover:bg-slate-900"
+                  >
+                  Nova Compra
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

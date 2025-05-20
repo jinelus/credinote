@@ -12,19 +12,19 @@ const clientSchema = z.object({
   name: z.string().min(3, { message: 'O nome deve ter pelo menos 3 caracteres' }),
   cpf: z.string().min(11, { message: 'CPF inválido' }),
   telephone: z.string().optional(),
-  organizationId: z.string()
+  slug: z.string()
 })
 
 type ClientFormData = z.infer<typeof clientSchema>
 
 
-export default function CreateClientForm() {
+export default function CreateClientForm({ slug }: { slug: string }) {
   const router = useRouter()
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ClientFormData>({
     resolver: zodResolver(clientSchema),
     defaultValues: {
-      organizationId: '1'
+      slug
     }
   })
 
@@ -35,8 +35,9 @@ export default function CreateClientForm() {
       const clientData = {
         ...data
       }
+      
       await registerClient(clientData)
-      router.push('/clientes')
+      router.push(`/${slug}/novo-compra`)
     } catch (error) {
       console.error('Erro ao cadastrar cliente:', error)
     }

@@ -24,17 +24,8 @@ export default function SignInForm() {
     })
 
     const onSubmit = async (data: FormData) => {
-        try {
             console.log(data)
-            router.push('/');
-            router.refresh();
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(err.message || 'Ocorreu um erro ao fazer login');
-            } else {
-                setError('Ocorreu um erro ao fazer login');
-            }
-        }
+            router.push('/jcb-mercado/');
     }
 
     return (
