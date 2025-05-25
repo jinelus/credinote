@@ -13,11 +13,11 @@ interface Client {
 
 interface ClientDetailsCardProps {
   client: Client
-  currentPage: string
   slug: string
+  redirectCancelLink: string
 }
 
-export function ClientDetailsCard({ client, currentPage, slug }: ClientDetailsCardProps) {
+export function ClientDetailsCard({ client, slug, redirectCancelLink }: ClientDetailsCardProps) {
 
 
   return (
@@ -26,7 +26,7 @@ export function ClientDetailsCard({ client, currentPage, slug }: ClientDetailsCa
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-slate-800">Detalhes do Cliente</h2>
-            <Link href={`/${slug}/clientes?page=${currentPage}`}>
+            <Link href={`${redirectCancelLink}`}>
               <button
                 className="text-slate-400 hover:text-slate-500"
                 >
@@ -63,7 +63,7 @@ export function ClientDetailsCard({ client, currentPage, slug }: ClientDetailsCa
             </div>
 
             <div className="pt-6">
-              <Link href={`/${slug}/nova-compra`}>
+              <Link href={`/${slug}/nova-compra?client=${client.id}`}>
                 <Button
                   className="w-full bg-slate-800 text-white hover:bg-slate-900"
                   >

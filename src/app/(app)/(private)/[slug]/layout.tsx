@@ -7,12 +7,14 @@ export default async function PrivateRootLayout({ children, params }: { children
     const slug = (await params).slug
 
     return (
-        <main className="h-dvh max-h-dvh w-full flex">
+        <main className="h-dvh max-h-dvh overflow-hidden w-full flex">
             <NavContextProvider>
                 <Sidebar slug={slug} />
-                <div className="flex-[5]">
+                <div className="flex-[5] overflow-y-auto">
                     <Navbar />
-                    {children}
+                    <div className="flex justify-center">
+                        {children}
+                    </div>
                 </div>
             </NavContextProvider>
         </main>

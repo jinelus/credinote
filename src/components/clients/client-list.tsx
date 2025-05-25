@@ -23,7 +23,7 @@ interface ClientListProps {
 
 const ITEMS_PER_PAGE = 10
 
-export function ClientList({ clients, selectedClientId, currentPage,slug }: ClientListProps) {
+export function ClientList({ clients, selectedClientId, currentPage, slug }: ClientListProps) {
   const router = useRouter()
   const page = Number(currentPage) || 1
   const [searchTerm, setSearchTerm] = useState('')

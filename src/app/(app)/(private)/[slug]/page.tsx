@@ -4,8 +4,17 @@ import Button from '@/src/components/base-components/button'
 import { Plus, Users, ShoppingCart, Package } from 'lucide-react'
 import { Card } from '@/src/components/base-components/card'
 import Link from 'next/link'
+import { getClient, getOrders } from './action'
+import { ClientDetailsCard } from '@/src/components/clients/client-details-card'
+import { OrderList } from '@/src/components/orders/order-list'
 
-export default function DashboardPage() {
+export default async function DashboardPage({ 
+  params, 
+  searchParams 
+}: { 
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ [key: string]: string | undefined }>
+}) {
 
   const quickActions = [
     {
@@ -38,36 +47,47 @@ export default function DashboardPage() {
     }
   ]
 
-  const recentOrders = [
-    {
-      id: '1',
-      clientName: 'João Silva',
-      amount: 150.00,
-      status: 'Pago',
-      date: '2024-04-12'
-    },
-    {
-      id: '2',
-      clientName: 'Maria Santos',
-      amount: 230.50,
-      status: 'Pendente',
-      date: '2024-04-11'
-    },
-    {
-      id: '3',
-      clientName: 'Pedro Oliveira',
-      amount: 89.90,
-      status: 'Pago',
-      date: '2024-04-10'
-    },
-    {
-      id: '4',
-      clientName: 'Ana Costa',
-      amount: 450.00,
-      status: 'Pendente',
-      date: '2024-04-09'
-    }
-  ]
+  // const recentOrders = [
+  //   {
+  //     id: '1',
+  //     clientName: 'João Silva',
+  //     amount: 150.00,
+  //     status: 'Pago',
+  //     date: '2024-04-12'
+  //   },
+  //   {
+  //     id: '2',
+  //     clientName: 'Maria Santos',
+  //     amount: 230.50,
+  //     status: 'Pendente',
+  //     date: '2024-04-11'
+  //   },
+  //   {
+  //     id: '3',
+  //     clientName: 'Pedro Oliveira',
+  //     amount: 89.90,
+  //     status: 'Pago',
+  //     date: '2024-04-10'
+  //   },
+  //   {
+  //     id: '4',
+  //     clientName: 'Ana Costa',
+  //     amount: 450.00,
+  //     status: 'Pendente',
+  //     date: '2024-04-09'
+  //   }
+  // ]
+
+  const { slug } = await params
+  const { client } = (await searchParams)
+
+  const recentOrders = await getOrders({})
+
+  if (!recentOrders.success || !recentOrders.data) {
+    return
+  }
+
+  const selectedClient = client ? await getClient(client) : null
 
   return (
     <Container className="min-h-screen">
@@ -91,80 +111,63 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        <div className="mt-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-slate-800">Pedidos Recentes</h2>
-            <div className="flex items-center gap-4">
-              <select
-                // value={sortBy}
-                // onChange={}
-                className="h-10 hover:cursor-pointer rounded-md bg-white  text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-800"
-              >
-                <option value="date-desc">Data (mais recente)</option>
-                <option value="date-asc">Data (mais antiga)</option>
-                <option value="value-desc">Valor (maior)</option>
-                <option value="value-asc">Valor (menor)</option>
-              </select>
-              <Link href="/pedidos" className="text-slate-600 hover:text-slate-900">
-                <Button
-                  variant="ghost"
-                  size='sm'
-                  className="text-slate-600 hover:text-white"
-                >
-                  Ver todos
-                </Button>
-            </Link>
+        <div className='flex flex-col lg:flex-row gap-8'>
+          <div className="mt-8 flex-1">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-slate-800">Pedidos Recentes</h2>
+              <div className="flex items-center gap-4">
+                <Link href="/pedidos" className="text-slate-600 hover:text-slate-900">
+                  <Button
+                    variant="ghost"
+                    size='sm'
+                    className="text-slate-600 hover:text-white"
+                  >
+                    Ver todos
+                  </Button>
+              </Link>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-slate-200">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                        Cliente
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                        Valor
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                        Data
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {recentOrders.data.map((order, index) => (
+                      <OrderList
+                        key={order.id}
+                        index={index}
+                        order={order}
+                        slug={slug}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-slate-200">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                      Cliente
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                      Valor
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                      Data
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200">
-                  {recentOrders.map((order, index) => (
-                    <tr key={order.id} className={`hover:bg-slate-100 cursor-pointer ${index % 2 !== 0 ? 'bg-slate-50' : 'bg-white'}`}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-slate-900">{order.clientName}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-slate-900">
-                          R$ {order.amount.toFixed(2)}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          order.status === 'Pago' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {order.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                        {new Date(order.date).toLocaleDateString('pt-BR')}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          {selectedClient && (
+          <div className="lg:w-96 w-full">
+            <ClientDetailsCard
+              client={selectedClient}
+              slug={slug}
+              redirectCancelLink={`/${slug}`}
+            />
           </div>
+        )}
         </div>
       </div>
     </Container>

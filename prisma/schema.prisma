@@ -30,7 +30,8 @@ model Organization {
   slug      String   @unique
   email     String   @unique
   password  String
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
   clients   Client[]
 
   @@map("organizations")
@@ -42,6 +43,7 @@ model Client {
   cpf            String    @unique
   telephone      String
   createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
   amount         Decimal   @db.Decimal(10, 2)
   organizationId String    @map("organization_id")
   Order          Order[]
@@ -53,26 +55,27 @@ model Client {
 }
 
 model Order {
-  id       String      @id @default(uuid())
-  date     DateTime    @default(now())
-  total    Decimal     @db.Decimal(10, 2)
-  status   OrderStatus @default(UNPAID)
-  datePaid DateTime    @default(now()) @map("date_paid")
-  idClient String      @map("id_client")
+  id    String   @id @default(uuid())
+  date  DateTime @default(now())
+  total Decimal  @db.Decimal(10, 2)
 
-  client Client @relation(fields: [idClient], references: [id])
+  clientId String @map("id_client")
 
+  client Client @relation(fields: [clientId], references: [id])
+
+  @@index([clientId])
   @@map("orders")
 }
 
 model Payment {
   id       String        @id @default(uuid())
-  idClient String        @map("id_client")
+  clientId String        @map("id_client")
   amount   Decimal       @db.Decimal(10, 2)
   method   PaymentMethod @default(CASH)
   paidAt   DateTime      @map("paid_at")
 
-  client Client @relation(fields: [idClient], references: [id])
+  client Client @relation(fields: [clientId], references: [id])
 
+  @@index([clientId])
   @@map("payments")
 }

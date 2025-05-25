@@ -2,20 +2,18 @@
 
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import * as z from 'zod'
-import { OrderStatus, PaymentMethod } from '@prisma/client'
 import Button from '../base-components/button'
 import { Input } from '../base-components/input'
 import { Search } from 'lucide-react'
 import Spinner from '../base-components/spinner'
-import { getClientByCpf } from '@/src/app/actions/client-actions'
+import { getClientByCpf } from '@/src/app/(app)/(private)/[slug]/clientes/actions'
 import { useState } from 'react'
+import { addOrder } from '@/src/app/(app)/(private)/[slug]/nova-compra/actions'
 
 const formSchema = z.object({
-  total: z.string().min(1, 'O valor é obrigatório'),
-  status: z.nativeEnum(OrderStatus),
-  paymentMethod: z.nativeEnum(PaymentMethod),
+  total: z.number().min(1, 'O valor é obrigatório'),
   clientId: z.string().min(1, 'O cliente é obrigatório'),
   clientName: z.string(),
   clientCpf: z.string().min(11, 'CPF inválido'),
@@ -23,31 +21,46 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
-// Simulação de server action - será substituída posteriormente
-async function createOrder(data: FormValues) {
-  console.log('Dados da compra:', data)
-  return { success: true }
+interface Client {
+  id: string
+  name: string
+  cpf: string
+  telephone: string
+  amount: number
 }
 
+interface CreateOrderFormProps {
+  slug: string
+  client: Client | null
+}
 
-export default function CreateOrderForm({ slug }: { slug: string }) {
+export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const router = useRouter()
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      total: '',
-      status: OrderStatus.UNPAID,
-      paymentMethod: PaymentMethod.CASH,
-      clientId: '',
-      clientName: '',
-      clientCpf: '',
+      total: 0,
+      clientId: client?.id || '',
+      clientName: client?.name || '',
+      clientCpf: client?.cpf || '',
     },
+    mode: 'onChange',
   })
+
+  const total = useWatch({
+    control: form.control,
+    name: 'total'
+  })
+
+  const cpf = useWatch({
+    control: form.control,
+    name: 'clientCpf',
+  })
+
 
   const handleCpfSearch = async () => {
     setIsLoading(true)
-    const cpf = form.getValues('clientCpf')
     if (cpf.length === 11) {
       try {
         const client = await getClientByCpf({
@@ -55,12 +68,13 @@ export default function CreateOrderForm({ slug }: { slug: string }) {
           slug,
         })
 
-        if (!client) {
+        if (!client.success || !client.data) {
           return
-        }
+        } 
 
-        form.setValue('clientId', client.id)
-        form.setValue('clientName', client.name)
+        form.setValue('clientId', client.data.id)
+        form.setValue('clientName', client.data.name)
+
       } catch (error) {
         console.error('Erro ao buscar cliente:', error)
       } finally {
@@ -71,9 +85,13 @@ export default function CreateOrderForm({ slug }: { slug: string }) {
 
   async function onSubmit(values: FormValues) {
     try {
-      const result = await createOrder(values)
+      const result = await addOrder({
+        clientId: values.clientId,
+        slug,
+        total: Number(values.total)
+      })
       if (result.success) {
-        router.push('/compras')
+        router.push(`/${slug}/`)
       }
     } catch (error) {
       console.error('Erro:', error)
@@ -99,7 +117,7 @@ export default function CreateOrderForm({ slug }: { slug: string }) {
               <Button
                 type="button"
                 onClick={handleCpfSearch}
-                disabled={isLoading}
+                disabled={isLoading || !cpf}
                 className='flex w-10 items-center justify-center'
               >
                 {isLoading ? <Spinner /> : <Search className='text-white text-xl' />}
@@ -122,7 +140,7 @@ export default function CreateOrderForm({ slug }: { slug: string }) {
               type="text"
               className='bg-gray-200 border-gray-200 text-gray-800'
               disabled
-              value={form.watch('clientName')}
+              value={form.control._getWatch('clientName')}
             />
           </div>
 
@@ -136,50 +154,6 @@ export default function CreateOrderForm({ slug }: { slug: string }) {
               step="0.01"
               {...form.register('total')}
             />
-            {form.formState.errors.total && (
-              <p className="text-sm text-red-500">
-                {form.formState.errors.total.message}
-              </p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <label htmlFor="status" className="text-sm font-medium">
-              Status
-            </label>
-            <select
-              id="status"
-              className="w-full rounded-md border border-gray-300 px-3 py-2"
-              {...form.register('status')}
-            >
-              <option value={OrderStatus.UNPAID}>Crédito</option>
-              <option value={OrderStatus.PAID}>Débito</option>
-            </select>
-            {form.formState.errors.status && (
-              <p className="text-sm text-red-500">
-                {form.formState.errors.status.message}
-              </p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <label htmlFor="paymentMethod" className="text-sm font-medium">
-              Método de pagamento
-            </label>
-            <select
-              id="paymentMethod"
-              className="w-full rounded-md border border-gray-300 px-3 py-2"
-              {...form.register('paymentMethod')}
-            >
-              <option value={PaymentMethod.CASH}>Dinheiro</option>
-              <option value={PaymentMethod.CARD}>Cartão</option>
-              <option value={PaymentMethod.PIX}>PIX</option>
-            </select>
-            {form.formState.errors.paymentMethod && (
-              <p className="text-sm text-red-500">
-                {form.formState.errors.paymentMethod.message}
-              </p>
-            )}
           </div>
         </div>
 
@@ -194,7 +168,8 @@ export default function CreateOrderForm({ slug }: { slug: string }) {
           </Button>
           <Button
             type="submit"
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting || total <= 0}
+            className='disabled:text-gray-400'
           >
             {form.formState.isSubmitting ? 'Cadastrando...' : 'Cadastrar compra'}
           </Button>

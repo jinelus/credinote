@@ -6,7 +6,7 @@ import Button from '@/src/components/base-components/button'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { registerClient } from '@/src/app/actions/client-actions'
+import { registerClient } from '@/src/app/(app)/(private)/[slug]/clientes/actions'
 
 const clientSchema = z.object({
   name: z.string().min(3, { message: 'O nome deve ter pelo menos 3 caracteres' }),
@@ -36,8 +36,13 @@ export default function CreateClientForm({ slug }: { slug: string }) {
         ...data
       }
       
-      await registerClient(clientData)
-      router.push(`/${slug}/novo-compra`)
+      const result = await registerClient(clientData)
+      
+      if (!result.success || !result.data) {
+
+      } else {
+        router.push(`/${slug}/nova-compra?clientId=${result.data.id}`)
+      }     
     } catch (error) {
       console.error('Erro ao cadastrar cliente:', error)
     }
