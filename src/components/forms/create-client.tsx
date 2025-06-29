@@ -3,28 +3,28 @@
 import { useRouter } from 'next/navigation'
 import { Input } from '@/src/components/base-components/input'
 import Button from '@/src/components/base-components/button'
-import { registerClient } from '@/src/app/actions/client-actions'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { registerClient } from '@/src/app/(app)/(private)/[slug]/clientes/actions'
 
 const clientSchema = z.object({
   name: z.string().min(3, { message: 'O nome deve ter pelo menos 3 caracteres' }),
   cpf: z.string().min(11, { message: 'CPF inválido' }),
   telephone: z.string().optional(),
-  organizationId: z.string()
+  slug: z.string()
 })
 
 type ClientFormData = z.infer<typeof clientSchema>
 
 
-export default function CreateClientForm() {
+export default function CreateClientForm({ slug }: { slug: string }) {
   const router = useRouter()
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ClientFormData>({
     resolver: zodResolver(clientSchema),
     defaultValues: {
-      organizationId: '1'
+      slug
     }
   })
 
@@ -35,8 +35,14 @@ export default function CreateClientForm() {
       const clientData = {
         ...data
       }
-      await registerClient(clientData)
-      router.push('/clientes')
+      
+      const result = await registerClient(clientData)
+      
+      if (!result.success || !result.data) {
+
+      } else {
+        router.push(`/${slug}/nova-compra?clientId=${result.data.id}`)
+      }     
     } catch (error) {
       console.error('Erro ao cadastrar cliente:', error)
     }
@@ -46,7 +52,7 @@ export default function CreateClientForm() {
     <div className="max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-8 text-slate-800">Novo Cliente</h1>
       
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-14">
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col gap-2">

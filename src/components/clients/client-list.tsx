@@ -1,7 +1,6 @@
 'use client'
 
 import { Card } from '@/src/components/base-components/card'
-import Button from '@/src/components/base-components/button'
 import { useRouter } from 'next/navigation'
 import { User, Search } from 'lucide-react'
 import Link from 'next/link'
@@ -11,20 +10,20 @@ interface Client {
   id: string
   name: string
   cpf: string
-  phone: string
-  ordersCount: number
-  totalSpent: number
+  telephone: string
+  amount: number
 }
 
 interface ClientListProps {
   clients: Client[]
   selectedClientId: string | null
   currentPage: string
+  slug: string
 }
 
 const ITEMS_PER_PAGE = 10
 
-export function ClientList({ clients, selectedClientId, currentPage }: ClientListProps) {
+export function ClientList({ clients, selectedClientId, currentPage, slug }: ClientListProps) {
   const router = useRouter()
   const page = Number(currentPage) || 1
   const [searchTerm, setSearchTerm] = useState('')
@@ -35,7 +34,7 @@ export function ClientList({ clients, selectedClientId, currentPage }: ClientLis
     return clients.filter(client => 
       client.name.toLowerCase().includes(term) ||
       client.cpf.includes(term) ||
-      client.phone.includes(term)
+      client.telephone.includes(term)
     )
   }, [searchTerm, clients])
 
@@ -46,7 +45,7 @@ export function ClientList({ clients, selectedClientId, currentPage }: ClientLis
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
     if (page !== 1) {
-      router.push('/clientes?page=1')
+      router.push(`/${slug}/clientes?page=1`)
     }
   }
 
@@ -54,20 +53,11 @@ export function ClientList({ clients, selectedClientId, currentPage }: ClientLis
     const params = new URLSearchParams()
     params.set('clientId', clientId)
     params.set('page', page.toString())
-    router.push(`/clientes?${params.toString()}`)
+    router.push(`/${slug}/clientes?${params.toString()}`)
   }
 
   return (
     <div className="flex-1">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">Clientes</h1>
-        <Button
-          onClick={() => router.push('/novo-cliente')}
-          className="bg-slate-800 text-white hover:bg-slate-900 w-full sm:w-auto"
-        >
-          Novo Cliente
-        </Button>
-      </div>
 
       <Card className="mb-6">
         <div className="p-4">
@@ -96,9 +86,6 @@ export function ClientList({ clients, selectedClientId, currentPage }: ClientLis
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider hidden sm:table-cell">
                   CPF
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider hidden sm:table-cell">
-                  Pedidos
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Total Gasto
@@ -130,7 +117,7 @@ export function ClientList({ clients, selectedClientId, currentPage }: ClientLis
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-slate-900">{client.name}</div>
-                          <div className="text-sm text-slate-500">{client.phone}</div>
+                          <div className="text-sm text-slate-500">{client.telephone}</div>
                           <div className="text-sm text-slate-500 sm:hidden">{client.cpf}</div>
                         </div>
                       </div>
@@ -138,12 +125,12 @@ export function ClientList({ clients, selectedClientId, currentPage }: ClientLis
                     <td className="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
                       <div className="text-sm text-slate-900">{client.cpf}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
-                      <div className="text-sm text-slate-900">{client.ordersCount}</div>
-                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-slate-900">
-                        R$ {client.totalSpent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        {client.amount.toLocaleString('pt-br', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        })}
                       </div>
                     </td>
                   </tr>
@@ -184,7 +171,7 @@ export function ClientList({ clients, selectedClientId, currentPage }: ClientLis
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
                 <Link
                   key={pageNumber}
-                  href={`/clientes?page=${pageNumber}`}
+                  href={`/${slug}/clientes?page=${pageNumber}`}
                   className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                     page === pageNumber
                       ? 'z-10 bg-slate-800 border-slate-800 text-white'

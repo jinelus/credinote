@@ -13,11 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  ADMIN
-  USER
-}
-
 enum OrderStatus {
   UNPAID
   PAID
@@ -29,16 +24,16 @@ enum PaymentMethod {
   PIX
 }
 
-model User {
+model Organization {
   id        String   @id @default(uuid())
   name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  role      UserRole @default(USER)
+  slug      String   @unique
+  users     User[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
   clients   Client[]
 
-  @@map("users")
+  @@map("organizations")
 }
 
 model Client {
@@ -47,37 +42,101 @@ model Client {
   cpf            String    @unique
   telephone      String
   createdAt      DateTime  @default(now()) @map("created_at")
-  amount         Float
-  organizationId String    @unique @map("business_id")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  amount         Decimal   @db.Decimal(10, 2)
+  organizationId String    @map("organization_id")
   Order          Order[]
   Payment        Payment[]
 
-  business User @relation(fields: [organizationId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
 
   @@map("clients")
 }
 
 model Order {
-  id       String      @id @default(uuid())
-  date     DateTime    @default(now())
-  total    Float
-  status   OrderStatus @default(UNPAID)
-  datePaid DateTime    @default(now()) @map("date_paid")
-  idClient String      @map("id_client")
+  id    String   @id @default(uuid())
+  date  DateTime @default(now())
+  total Decimal  @db.Decimal(10, 2)
 
-  client Client @relation(fields: [idClient], references: [id])
+  clientId String @map("id_client")
 
+  client Client @relation(fields: [clientId], references: [id])
+
+  @@index([clientId])
   @@map("orders")
 }
 
 model Payment {
   id       String        @id @default(uuid())
-  idClient String        @map("id_client")
-  amount   Float
+  clientId String        @map("id_client")
+  amount   Decimal       @db.Decimal(10, 2)
   method   PaymentMethod @default(CASH)
   paidAt   DateTime      @map("paid_at")
 
-  client Client @relation(fields: [idClient], references: [id])
+  client Client @relation(fields: [clientId], references: [id])
 
+  @@index([clientId])
   @@map("payments")
+}
+
+model User {
+  id             String        @id
+  name           String
+  email          String
+  emailVerified  Boolean
+  image          String?
+  createdAt      DateTime
+  updatedAt      DateTime
+  sessions       Session[]
+  accounts       Account[]
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
 }
