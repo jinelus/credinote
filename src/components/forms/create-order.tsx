@@ -6,17 +6,17 @@ import { useForm, useWatch } from 'react-hook-form'
 import * as z from 'zod'
 import Button from '../base-components/button'
 import { Input } from '../base-components/input'
-import { Search } from 'lucide-react'
 import Spinner from '../base-components/spinner'
 import { getClientByCpf } from '@/src/app/(app)/(private)/[slug]/clientes/actions'
 import { useState } from 'react'
 import { addOrder } from '@/src/app/(app)/(private)/[slug]/nova-compra/actions'
+import { handleCpfInputFormatting } from '@/src/utils/format'
 
 const formSchema = z.object({
   total: z.number().min(1, 'O valor é obrigatório'),
   clientId: z.string().min(1, 'O cliente é obrigatório'),
   clientName: z.string(),
-  clientCpf: z.string().min(11, 'CPF inválido'),
+  clientCpf: z.string().min(14, 'CPF inválido'),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -53,15 +53,9 @@ export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) 
     name: 'total'
   })
 
-  const cpf = useWatch({
-    control: form.control,
-    name: 'clientCpf',
-  })
 
-
-  const handleCpfSearch = async () => {
+  const handleCpfSearch = async (cpf: string) => {
     setIsLoading(true)
-    if (cpf.length === 11) {
       try {
         const client = await getClientByCpf({
           cpf,
@@ -80,10 +74,10 @@ export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) 
       } finally {
         setIsLoading(false)
       }
-    }
   }
 
   async function onSubmit(values: FormValues) {
+    console.log(values)
     try {
       const result = await addOrder({
         clientId: values.clientId,
@@ -113,15 +107,23 @@ export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) 
                 type="text"
                 placeholder="000.000.000-00"
                 {...form.register('clientCpf')}
+                maxLength={14}
+                onChange={(e) => {
+                  handleCpfInputFormatting(e)
+
+                  if (e.target.value.length === 14) {
+                    handleCpfSearch(e.target.value)
+                  }
+                }}
+                disabled={!!client}
+                className='disabled:bg-gray-200 disabled:border-gray-200 disabled:text-gray-800'
               />
-              <Button
+              {isLoading && <Button
                 type="button"
-                onClick={handleCpfSearch}
-                disabled={isLoading || !cpf}
                 className='flex w-10 items-center justify-center'
               >
-                {isLoading ? <Spinner /> : <Search className='text-white text-xl' />}
-              </Button>
+                <Spinner /> 
+              </Button>}
             </div>
             {form.formState.errors.clientCpf && (
               <p className="text-sm text-red-500">

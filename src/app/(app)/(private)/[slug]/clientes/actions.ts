@@ -11,19 +11,19 @@ export interface RegisterClientProps {
 }
 
 export interface EditClientUseCaseProps {
-    organizationId: string;
+    userId: string;
     clientId: string;
     name: string;
     telephone?: string;
 }
 
 export interface DeleteClientUseCaseProps {
-    organizationId: string;
+    userId: string;
     clientId: string;
 }
 
 export interface FetchClientsParams {
-    organizationId: string
+    slug: string
     params: {
         page?: number
     }
@@ -33,6 +33,17 @@ export interface GetClientByCpfParams {
     slug: string
     cpf: string
 }
+
+export type ClientResponse = {
+    amount: number;
+    name: string;
+    id: string;
+    cpf: string;
+    telephone: string;
+    createdAt: Date;
+    updatedAt: Date;
+    organizationId: string;
+} | null
 
 
 export async function registerClient(client: RegisterClientProps ) {
@@ -47,7 +58,7 @@ export async function registerClient(client: RegisterClientProps ) {
         })
     
         if (!organization) {
-            throw new Error()
+            throw new Error('Não faz parte de uma organização')
         }
 
         const existing = await prisma.client.findUnique({
@@ -57,7 +68,7 @@ export async function registerClient(client: RegisterClientProps ) {
         })
 
         if (existing) {
-            throw new Error()
+            throw new Error('Esse cliente já foi cadastrado')
         }
     
         const createdClient = await prisma.client.create({
@@ -81,17 +92,17 @@ export async function registerClient(client: RegisterClientProps ) {
 
 export async function editClient(client: EditClientUseCaseProps) {
 
-    const { name, telephone, clientId, organizationId } = client
+    const { name, telephone, clientId, userId } = client
 
     const result = await withErrorHandling(async () => {
-        const organization = await prisma.organization.findUnique({
+        const user = await prisma.user.findUnique({
             where: {
-                id: organizationId
+                id: userId
             }
         })
     
-        if(!organization) {
-            throw new Error('Organization not found')
+        if(!user) {
+            throw new Error('User not found')
         }
     
         const updatedClient = await prisma.client.update({
@@ -110,17 +121,17 @@ export async function editClient(client: EditClientUseCaseProps) {
     return result
 }
 
-export async function deleteClient({ clientId, organizationId }: DeleteClientUseCaseProps) {
+export async function deleteClient({ clientId, userId }: DeleteClientUseCaseProps) {
 
     const result = await withErrorHandling(async () => {
-        const organization = await prisma.organization.findUnique({
+        const user = await prisma.user.findUnique({
             where: {
-                id: organizationId
+                id: userId
             }
         })
     
-        if(!organization) {
-            throw new Error('Organization not found')
+        if(!user) {
+            throw new Error('User not found')
         }
     
         await prisma.client.delete({
@@ -133,13 +144,20 @@ export async function deleteClient({ clientId, organizationId }: DeleteClientUse
     return result
 }
 
-export async function fetchClients({ organizationId, params }: FetchClientsParams) {
+export async function fetchClients({ slug, params }: FetchClientsParams) {
+
+    const organization = await prisma.organization.findUnique({
+        where: {
+            slug
+        }
+    })
+
     const result = await withErrorHandling(async () => {
         const { page = 1 } = params
     
         const clients = await prisma.client.findMany({
             where: {
-                organizationId,
+                organizationId: organization?.id,
             },
             skip: (page - 1) * 10,
             take: 10,
@@ -171,14 +189,17 @@ export async function getClientByCpf({ slug, cpf }: GetClientByCpfParams) {
             where: {
                 cpf,
                 organizationId: organization.id
-            },
-            select: {
-                id: true,
-                name: true
             }
         })
+
+        if (!client) {
+            return null
+        }
     
-        return client
+        return {
+            ...client,
+            amount: Number(client.amount)
+        }
     })
 
     return result

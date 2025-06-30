@@ -8,9 +8,9 @@ export const Navbar = () => {
     const { handleOpen } = useNav()
 
     return (
-        <nav className="w-full flex items-center justify-between md:justify-end py-5 px-20 gap-6 border-b border-slate-200">
-            <div className="flex items-center gap-6 md:hidden">
-                <span className="cursor-pointer text-lg" onClick={handleOpen}>
+        <nav className="w-full flex items-center justify-between md:justify-between py-5 px-20 gap-6 border-b border-slate-200">
+            <div className="flex items-center gap-6">
+                <span className="cursor-pointer text-lg md:hidden" onClick={handleOpen}>
                     <Menu />
                 </span>
                 <div className="text-2xl font-bold text-slate-800">
