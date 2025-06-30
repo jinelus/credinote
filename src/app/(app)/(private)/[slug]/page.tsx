@@ -16,70 +16,39 @@ export default async function DashboardPage({
   searchParams: Promise<{ [key: string]: string | undefined }>
 }) {
 
+  const { slug } = await params
+  const { client } = (await searchParams)
+
   const quickActions = [
     {
       title: 'Novo Cliente',
       description: 'Cadastre um novo cliente',
       icon: <Plus className="w-6 h-6" />,
-      href: '/novo-cliente',
+      href: `/${slug}/novo-cliente`,
       color: 'bg-blue-500'
     },
     {
       title: 'Lista de Clientes',
       description: 'Visualize todos os clientes',
       icon: <Users className="w-6 h-6" />,
-      href: '/clientes',
+      href: `/${slug}/clientes`,
       color: 'bg-green-500'
     },
     {
       title: 'Pedidos',
       description: 'Gerencie os pedidos',
       icon: <Package className="w-6 h-6" />,
-      href: '/pedidos',
+      href: `/${slug}/pedidos`,
       color: 'bg-purple-500'
     },
     {
       title: 'Compras',
       description: 'Registre novas compras',
       icon: <ShoppingCart className="w-6 h-6" />,
-      href: '/compras',
+      href: `/${slug}/compras`,
       color: 'bg-orange-500'
     }
   ]
-
-  // const recentOrders = [
-  //   {
-  //     id: '1',
-  //     clientName: 'João Silva',
-  //     amount: 150.00,
-  //     status: 'Pago',
-  //     date: '2024-04-12'
-  //   },
-  //   {
-  //     id: '2',
-  //     clientName: 'Maria Santos',
-  //     amount: 230.50,
-  //     status: 'Pendente',
-  //     date: '2024-04-11'
-  //   },
-  //   {
-  //     id: '3',
-  //     clientName: 'Pedro Oliveira',
-  //     amount: 89.90,
-  //     status: 'Pago',
-  //     date: '2024-04-10'
-  //   },
-  //   {
-  //     id: '4',
-  //     clientName: 'Ana Costa',
-  //     amount: 450.00,
-  //     status: 'Pendente',
-  //     date: '2024-04-09'
-  //   }
-  // ]
-
-  const { slug } = await params
-  const { client } = (await searchParams)
 
   const recentOrders = await getOrders({})
 
@@ -116,7 +85,7 @@ export default async function DashboardPage({
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-slate-800">Pedidos Recentes</h2>
               <div className="flex items-center gap-4">
-                <Link href="/pedidos" className="text-slate-600 hover:text-slate-900">
+                <Link href={`/${slug}/pedidos`} className="text-slate-600 hover:text-slate-900">
                   <Button
                     variant="ghost"
                     size='sm'
@@ -145,14 +114,17 @@ export default async function DashboardPage({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200">
-                    {recentOrders.data.map((order, index) => (
+                    {recentOrders.data.length > 0 ? recentOrders.data.map((order, index) => (
                       <OrderList
                         key={order.id}
                         index={index}
                         order={order}
-                        slug={slug}
                       />
-                    ))}
+                    )) : (
+                      <tr>
+                        <td colSpan={3} className='text-center py-3'> Nenhum pedido achado </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
