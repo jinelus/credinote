@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from "next/navigation"
+import { useQueryState } from 'nuqs'
 
 
 interface Order {
@@ -13,19 +13,18 @@ interface Order {
 
 interface OrderListParams {
     order: Order
-    slug: string
     index: number
 }
 
-export const OrderList = ({ index, order, slug }: OrderListParams) => {
+export const OrderList = ({ index, order }: OrderListParams) => {
 
-    const router = useRouter()
+    const [, setClient] = useQueryState('client', {
+      shallow: false
+    })
+
 
     const handleSelectedClient = () => {
-        const params = new URLSearchParams()
-        params.set('client', order.clientId)
-
-        router.push(`/${slug}?${params.toString()}`)
+        setClient(order.id.toString())
     }
 
     return (

@@ -7,6 +7,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { authClient } from "@/src/lib/auth";
+import { getUserWithOrganization } from "@/src/app/actions/organization";
 
 const FormDataSchema = z.object({
     email: z.string().email({ message: 'E-mail inválido' }),
@@ -24,8 +26,25 @@ export default function SignInForm() {
     })
 
     const onSubmit = async (data: FormData) => {
-            console.log(data)
-            router.push('/jcb-mercado/');
+        const { data: dataResponse } = await authClient.signIn.email({
+            email: data.email,
+            password: data.password,
+        }, {
+            onError: () => {
+                setError('Credenciais inválidas. Verifique seu e-mail e senha.')
+            },
+        })
+
+        if (dataResponse?.user) {
+            const data = await getUserWithOrganization(dataResponse?.user.email)
+
+            if (!data) {
+                setError('Você não faz parte de nenhum organização')
+                return
+            }
+
+            router.push(`/${data.organization?.slug}`)
+        }
     }
 
     return (
