@@ -17,7 +17,7 @@ interface Client {
 interface ClientListProps {
   clients: Client[]
   selectedClientId: string | null
-  currentPage: string
+  currentPage: number
   slug: string
 }
 
@@ -25,7 +25,7 @@ const ITEMS_PER_PAGE = 10
 
 export function ClientList({ clients, selectedClientId, currentPage, slug }: ClientListProps) {
   const router = useRouter()
-  const page = Number(currentPage) || 1
+  const page = currentPage || 1
   const [searchTerm, setSearchTerm] = useState('')
 
   const filteredClients = useMemo(() => {

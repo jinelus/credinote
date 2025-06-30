@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { registerClient } from '@/src/app/(app)/(private)/[slug]/clientes/actions'
+import { handleCpfInputFormatting, handleTelephoneInput } from '@/src/utils/format'
 
 const clientSchema = z.object({
   name: z.string().min(3, { message: 'O nome deve ter pelo menos 3 caracteres' }),
@@ -41,12 +42,14 @@ export default function CreateClientForm({ slug }: { slug: string }) {
       if (!result.success || !result.data) {
 
       } else {
-        router.push(`/${slug}/nova-compra?clientId=${result.data.id}`)
+        router.push(`/${slug}/nova-compra?client=${result.data.id}`)
       }     
     } catch (error) {
       console.error('Erro ao cadastrar cliente:', error)
     }
   }
+
+  
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -78,7 +81,11 @@ export default function CreateClientForm({ slug }: { slug: string }) {
               id="cpf"
               type="text"
               placeholder="000.000.000-00"
+              maxLength={14}
               {...register('cpf')}
+              onChange={(e) => {
+                handleCpfInputFormatting(e)
+              }}
             />
             {errors.cpf && (
               <p className="text-sm text-red-500">{errors.cpf.message}</p>
@@ -94,6 +101,10 @@ export default function CreateClientForm({ slug }: { slug: string }) {
               type="tel"
               placeholder="(00) 00000-0000"
               {...register('telephone')}
+              maxLength={16}
+              onChange={(e) => {
+                handleTelephoneInput(e)
+              }}
             />
             {errors.telephone && (
               <p className="text-sm text-red-500">{errors.telephone.message}</p>

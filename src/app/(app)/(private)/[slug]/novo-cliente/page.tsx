@@ -10,7 +10,7 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
 
   const result = await getOrganizationBySlug(slug)
 
-  if(!result.success || !result.data) {
+  if(!result) {
     redirect('/signin')
   }
 
