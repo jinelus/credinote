@@ -33,7 +33,10 @@ export async function getOrders({ order, orderBy, page = 1, perPage = 10 }: Pagi
             })
         )
 
-        return data
+        return {
+            success: true,
+            data,
+        }
     })
 
     return result
@@ -47,11 +50,17 @@ export async function getClient(id: string) {
     })
 
     if (!result) {
-        return null
+        return {
+            success: false,
+            error: 'Client not found'
+        }
     }
 
     return {
-        ...result,
-        amount: Number(result.amount)
+        success: true,
+        data: {
+            ...result,
+            amount: Number(result.amount)
+        }
     }
 }
