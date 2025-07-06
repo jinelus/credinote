@@ -58,7 +58,10 @@ export async function registerClient(client: RegisterClientProps ) {
         })
     
         if (!organization) {
-            throw new Error('Não faz parte de uma organização')
+            return {
+                success: false,
+                error: 'Não faz parte de uma organização'
+            }
         }
 
         const existing = await prisma.client.findUnique({
@@ -68,7 +71,10 @@ export async function registerClient(client: RegisterClientProps ) {
         })
 
         if (existing) {
-            throw new Error('Esse cliente já foi cadastrado')
+            return {
+                success: false,
+                error: 'Esse cliente já foi cadastrado'
+            }
         }
     
         const createdClient = await prisma.client.create({
@@ -82,8 +88,11 @@ export async function registerClient(client: RegisterClientProps ) {
         })
     
         return {
-            ...createdClient,
-            amount: Number(createdClient.amount)
+            success: true,
+            data: {
+                ...createdClient,
+                amount: Number(createdClient.amount)
+            }
         }
     })
     
@@ -102,7 +111,10 @@ export async function editClient(client: EditClientUseCaseProps) {
         })
     
         if(!user) {
-            throw new Error('User not found')
+            return {
+                success: false,
+                error: 'User not found'
+            }
         }
     
         const updatedClient = await prisma.client.update({
@@ -115,7 +127,10 @@ export async function editClient(client: EditClientUseCaseProps) {
             }
         })
         
-        return updatedClient
+        return {
+            success: true,
+            data: updatedClient
+        }
     })
 
     return result
@@ -131,7 +146,10 @@ export async function deleteClient({ clientId, userId }: DeleteClientUseCaseProp
         })
     
         if(!user) {
-            throw new Error('User not found')
+            return {
+                success: false,
+                error: 'User not found'
+            }
         }
     
         await prisma.client.delete({
@@ -139,6 +157,11 @@ export async function deleteClient({ clientId, userId }: DeleteClientUseCaseProp
                 id: clientId
             }
         })
+
+        return {
+            success: true,
+            data: 'Client deleted'
+        }
     })
 
     return result
@@ -166,10 +189,13 @@ export async function fetchClients({ slug, params }: FetchClientsParams) {
             }
         })
     
-        return clients.map((client) => ({
-            ...client,
-            amount: Number(client.amount)
-        }))
+        return {
+            success: true,
+            data: clients.map((client) => ({
+                ...client,
+                amount: Number(client.amount)
+            }))
+        }
     })
 
     return result
@@ -182,7 +208,10 @@ export async function getClientByCpf({ slug, cpf }: GetClientByCpfParams) {
         })
     
         if (!organization) {
-            return null
+            return {
+                success: false,
+                error: 'Organization not found'
+            }
         }
     
         const client = await prisma.client.findUnique({
@@ -193,12 +222,18 @@ export async function getClientByCpf({ slug, cpf }: GetClientByCpfParams) {
         })
 
         if (!client) {
-            return null
+            return {
+                success: false,
+                error: 'Client not found'
+            }
         }
     
         return {
-            ...client,
-            amount: Number(client.amount)
+            success: true,
+            data: {
+                ...client,
+                amount: Number(client.amount)
+            }
         }
     })
 
@@ -215,12 +250,18 @@ export async function getClientById(id: string) {
         })
 
         if (!client) {
-            return null
+            return {
+                success: false,
+                error: 'Client not found'
+            }
         }
 
         return {
-            ...client,
-            amount: Number(client.amount)
+            success: true,
+            data: {
+                ...client,
+                amount: Number(client.amount)
+            }
         }
     })
 

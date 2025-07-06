@@ -24,7 +24,7 @@ export const OrderList = ({ index, order }: OrderListParams) => {
 
 
     const handleSelectedClient = () => {
-        setClient(order.id.toString())
+        setClient(order.clientId.toString())
     }
 
     return (

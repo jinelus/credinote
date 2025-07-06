@@ -2,10 +2,15 @@ type ActionResponse<T> =
   | { success: true; data: T }
   | { success: false; error: string }
 
-export async function withErrorHandling<T>(fn: () => Promise<T>): Promise<ActionResponse<T>> {
+export async function withErrorHandling<T>(fn: () => Promise<ActionResponse<T>>): Promise<ActionResponse<T>> {
   try {
-    const data = await fn();
-    return { success: true, data }
+    const response = await fn();
+    
+    if (!response.success) {
+      return { success: false, error: response.error }
+    }
+    
+    return { success: true, data: response.data }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     console.error('[Server Error]', err)

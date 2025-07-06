@@ -19,7 +19,10 @@ export async function addOrder({ slug, clientId, total }: AddOrderParams) {
         })
 
         if (!organization) {
-            throw new Error()
+            return {
+                success: false,
+                error: 'Organização não encontrada'
+            }
         }
 
         const client = await prisma.client.findFirst({
@@ -30,7 +33,10 @@ export async function addOrder({ slug, clientId, total }: AddOrderParams) {
         })
 
         if (!client) {
-            throw new Error()
+            return {
+                success: false,
+                error: 'Cliente não encontrado'
+            }
         }
 
         const newOrder = await prisma.order.create({
@@ -52,8 +58,11 @@ export async function addOrder({ slug, clientId, total }: AddOrderParams) {
         })
 
         return {
-            ...newOrder,
-            total: Number(newOrder.total)
+            success: true,
+            data: {
+                ...newOrder,
+                total: Number(newOrder.total)
+            }
         }
     })
 

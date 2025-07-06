@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { registerClient } from '@/src/app/(app)/(private)/[slug]/clientes/actions'
 import { handleCpfInputFormatting, handleTelephoneInput } from '@/src/utils/format'
+import { toast } from 'sonner'
 
 const clientSchema = z.object({
   name: z.string().min(3, { message: 'O nome deve ter pelo menos 3 caracteres' }),
@@ -39,8 +40,8 @@ export default function CreateClientForm({ slug }: { slug: string }) {
       
       const result = await registerClient(clientData)
       
-      if (!result.success || !result.data) {
-
+      if (!result.success) {
+        toast.error(result.error || 'Erro ao cadastrar cliente')
       } else {
         router.push(`/${slug}/nova-compra?client=${result.data.id}`)
       }     

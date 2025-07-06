@@ -3,17 +3,18 @@
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, useWatch } from 'react-hook-form'
-import * as z from 'zod'
 import Button from '../base-components/button'
-import { Input } from '../base-components/input'
 import Spinner from '../base-components/spinner'
 import { getClientByCpf } from '@/src/app/(app)/(private)/[slug]/clientes/actions'
 import { useState } from 'react'
 import { addOrder } from '@/src/app/(app)/(private)/[slug]/nova-compra/actions'
 import { handleCpfInputFormatting } from '@/src/utils/format'
+import { toast } from 'sonner'
+import { Input } from '@/components/ui/input'
+import { z } from 'zod'
 
 const formSchema = z.object({
-  total: z.number().min(1, 'O valor é obrigatório'),
+  total: z.coerce.number().min(1, 'O valor é obrigatório'),
   clientId: z.string().min(1, 'O cliente é obrigatório'),
   clientName: z.string(),
   clientCpf: z.string().min(14, 'CPF inválido'),
@@ -53,7 +54,6 @@ export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) 
     name: 'total'
   })
 
-
   const handleCpfSearch = async (cpf: string) => {
     setIsLoading(true)
       try {
@@ -77,17 +77,20 @@ export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) 
   }
 
   async function onSubmit(values: FormValues) {
-    console.log(values)
     try {
       const result = await addOrder({
         clientId: values.clientId,
         slug,
         total: Number(values.total)
       })
-      if (result.success) {
-        router.push(`/${slug}/`)
+      if (!result.success) {
+        toast.error(result.error)
+      } else {
+        toast.success('Compra cadastrada com sucesso')
+        router.push(`/${slug}`)
       }
     } catch (error) {
+      toast.error(error as string)
       console.error('Erro:', error)
     }
   }
@@ -143,6 +146,7 @@ export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) 
               className='bg-gray-200 border-gray-200 text-gray-800'
               disabled
               value={form.control._getWatch('clientName')}
+              {...form.register('clientName')}
             />
           </div>
 
