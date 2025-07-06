@@ -7,6 +7,13 @@ import Link from 'next/link'
 import { getClient, getOrders } from './action'
 import { ClientDetailsCard } from '@/src/components/clients/client-details-card'
 import { OrderList } from '@/src/components/orders/order-list'
+import { createLoader, parseAsString } from 'nuqs/server'
+
+const filterSearchParams = {
+  client: parseAsString
+}
+
+const loadSearchParams = createLoader(filterSearchParams)
 
 export default async function DashboardPage({ 
   params, 
@@ -17,7 +24,7 @@ export default async function DashboardPage({
 }) {
 
   const { slug } = await params
-  const { client } = (await searchParams)
+  const { client } = await loadSearchParams(searchParams)
 
   const quickActions = [
     {
@@ -131,10 +138,10 @@ export default async function DashboardPage({
             </div>
           </div>
 
-          {selectedClient && (
+          {selectedClient?.success && selectedClient.data && (
           <div className="lg:w-96 w-full">
             <ClientDetailsCard
-              client={selectedClient}
+              client={selectedClient.data}
               slug={slug}
               redirectCancelLink={`/${slug}`}
             />

@@ -51,7 +51,7 @@ export function ClientList({ clients, selectedClientId, currentPage, slug }: Cli
 
   const handleClientSelect = (clientId: string) => {
     const params = new URLSearchParams()
-    params.set('clientId', clientId)
+    params.set('client', clientId)
     params.set('page', page.toString())
     router.push(`/${slug}/clientes?${params.toString()}`)
   }
