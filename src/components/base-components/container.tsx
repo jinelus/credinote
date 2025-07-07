@@ -7,7 +7,7 @@ type ContainerProps = {
 export const Container = (props: ContainerProps) => {
 
     return (
-        <section className={cn("w-full px-5 md:px-20 max-w-7xl py-10 lg:py-12", props.className)}>
+        <section className={cn("w-full px-5 md:px-20 max-w-7xl py-10 lg:py-12 mx-auto", props.className)}>
             {props.children}
         </section>
     )

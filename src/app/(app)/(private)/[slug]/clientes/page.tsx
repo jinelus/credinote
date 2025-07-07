@@ -55,7 +55,7 @@ export default async function ClientsPage({
           <select
             // value={sortBy}
             // onChange={}
-            className="h-10 hover:cursor-pointer rounded-md bg-white  text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-800"
+            className="h-10 hover:cursor-pointer rounded-md bg-white border border-slate-700 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-800"
           >
             <option value="date-desc">Data (mais recente)</option>
             <option value="date-asc">Data (mais antiga)</option>
