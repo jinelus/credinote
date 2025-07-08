@@ -4,15 +4,13 @@ import { prisma } from "@/src/db/prisma"
 import { withErrorHandling } from "@/src/utils/error-handler"
 import type { PaginationParams } from "@/src/utils/types"
 
-export async function getOrders({ order, orderBy, page = 1, perPage = 10 }: PaginationParams) {
+export async function getOrders({ page = 1, perPage = 10 }: PaginationParams) {
     const result = await withErrorHandling(async () => {
         const orders = await prisma.order.findMany({
             take: perPage,
             skip: (page - 1) * perPage,
-            orderBy: {
-                [orderBy || 'date']: order || 'desc'
-            }
         })
+        
 
         const data =  await Promise.all(
             orders.map(async (order) => {

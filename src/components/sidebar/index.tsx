@@ -1,55 +1,66 @@
 'use client'
 
-import { FileText, House, ShoppingCart, Users, X } from "lucide-react"
-import Link from "next/link"
-import { useNav } from "../navbar/nav-context"
+import { FileText, House, ShoppingCart, Users } from "lucide-react"
+import { Sidebar, SidebarGroup, SidebarMenu, SidebarMenuItem } from "@/components/ui/sidebar"
+import { SidebarCustomTrigger } from "../navbar/sidebar-trigger"
+import { LinkItems } from "./link-items"
 
 
-export const Sidebar = ({ slug }: { slug: string }) => {
+
+export const AppSidebar = ({ slug }: { slug: string }) => {
 
 
     const navLinks = [
         {
             label: 'Dashboard',
             href: `/${slug}/`,
-            icon: <House />
+            icon: {
+                active: <House fill="#000" />,
+                inactive: <House />
+            }
         },
         {
             label: 'Clientes',
             href: `/${slug}/clientes`,
-            icon: <Users />
+            icon: {
+                active: <Users fill="#000" />,
+                inactive: <Users />,
+            }
         },
         {
             label: 'Compras',
             href: `/${slug}/compras`,
-            icon: <ShoppingCart />
+            icon: {
+                active: <ShoppingCart fill="#000" />,
+                inactive: <ShoppingCart />,
+            }
         },
         {
             label: 'Relatorios',
             href: `/${slug}/relatorios`,
-            icon: <FileText />
+            icon: {
+                active: <FileText fill="#000" />,
+                inactive: <FileText />,
+            }
         }
     ]
 
-    const { open, handleOpen} = useNav()
-
     return (
-        <div className={`${open ? 'flex' : 'hidden md:flex'} absolute md:relative top-0 left-0 z-10 w-full md:w-auto md:flex-1 h-full bg-black/50 md:bg-transparent`}>
-            <div className="flex gap-16 flex-col items-center h-full border-r border-slate-200 w-1/2 sm:w-2/5 md:w-full bg-white md:bg-transparent">
-                <div className="text-2xl font-bold text-slate-800 py-5 w-full flex items-center justify-center">
-                    <X className="absolute top-2 right-2 cursor-pointer md:hidden" onClick={handleOpen} />
-                </div>
-                <ul className="w-full flex flex-col items-center">
-                    {navLinks.map((link, i) => (
-                        <li key={link.label + i} className="w-full">
-                            <Link href={link.href} className="w-full flex items-center gap-2.5 py-4 px-10 text-slate-800 font-semibold hover:bg-slate-200">
-                                {link.icon}
-                                <span className="hidden sm:flex">{link.label}</span>
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+        <Sidebar className='bg-green-800 w-full'>
+            <div className='flex justify-start p-4 md:hidden'>
+                <SidebarCustomTrigger />
             </div>
-        </div>
+            <SidebarGroup className='top-12 w-full p-3 md:top-0'>
+                <SidebarMenu className='flex flex-col gap-3'>
+                {navLinks.map((item) => {
+                    return (
+                    <SidebarMenuItem className='' key={item.label + item.href}>
+                        <LinkItems item={item} />
+                    </SidebarMenuItem>
+                    )
+                })}
+                </SidebarMenu>
+            </SidebarGroup>
+        </Sidebar>
     )
 }

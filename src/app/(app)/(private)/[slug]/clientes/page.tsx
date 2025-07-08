@@ -4,7 +4,6 @@ import { ClientDetailsCard } from '@/src/components/clients/client-details-card'
 import Button from '@/src/components/base-components/button'
 import Link from 'next/link'
 import { fetchClients } from '@/src/app/(app)/(private)/[slug]/clientes/actions'
-import { redirect } from 'next/navigation'
 import { createLoader, parseAsInteger, parseAsString, type SearchParams } from 'nuqs/server'
 
 const filterSearchParams = {
@@ -23,13 +22,6 @@ export default async function ClientsPage({
 }) {
   const { client, page } = await loadSearchParams(searchParams)
   const { slug } = await params
-
-  const result = {success: true, data: { id: ''}}
-
-  if (!result.success || !result.data) {
-    redirect('/signin')
-  }
-
 
   const clients = await fetchClients({ 
     slug, 

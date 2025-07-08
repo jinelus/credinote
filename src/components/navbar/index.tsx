@@ -1,18 +1,14 @@
 'use client'
 
-import { CircleUserRound, MapPinHouse, Menu } from "lucide-react"
-import { useNav } from "./nav-context"
+import { CircleUserRound, MapPinHouse } from "lucide-react"
+import { SidebarCustomTrigger } from "./sidebar-trigger"
 
 export const Navbar = () => {
-
-    const { handleOpen } = useNav()
 
     return (
         <nav className="w-full flex items-center justify-between md:justify-between py-5 px-20 gap-6 border-b border-slate-200">
             <div className="flex items-center gap-6">
-                <span className="cursor-pointer text-lg md:hidden" onClick={handleOpen}>
-                    <Menu />
-                </span>
+                <SidebarCustomTrigger />
                 <div className="text-2xl font-bold text-slate-800">
                     JCB Mercado
                 </div>

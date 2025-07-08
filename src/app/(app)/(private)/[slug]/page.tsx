@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { getClient, getOrders } from './action'
 import { ClientDetailsCard } from '@/src/components/clients/client-details-card'
 import { OrderList } from '@/src/components/orders/order-list'
-import { createLoader, parseAsString } from 'nuqs/server'
+import { createLoader, parseAsString, type SearchParams } from 'nuqs/server'
 
 const filterSearchParams = {
   client: parseAsString
@@ -20,7 +20,7 @@ export default async function DashboardPage({
   searchParams 
 }: { 
   params: Promise<{ slug: string }>
-  searchParams: Promise<{ [key: string]: string | undefined }>
+  searchParams: Promise<SearchParams>
 }) {
 
   const { slug } = await params
@@ -57,7 +57,7 @@ export default async function DashboardPage({
     }
   ]
 
-  const recentOrders = await getOrders({})
+  const recentOrders = await getOrders({ perPage: 5 })
 
   if (!recentOrders.success || !recentOrders.data) {
     return

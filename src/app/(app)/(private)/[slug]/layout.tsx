@@ -1,8 +1,7 @@
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getOrganizationBySlug } from "@/src/app/actions/organization";
-import { Container } from "@/src/components/base-components/container";
 import { Navbar } from "@/src/components/navbar";
-import { NavContextProvider } from "@/src/components/navbar/nav-context";
-import { Sidebar } from "@/src/components/sidebar";
+import { AppSidebar } from "@/src/components/sidebar";
 import { redirect } from "next/navigation";
 
 export default async function PrivateRootLayout({ children, params }: { children: React.ReactNode, params: Promise<{ slug: string }> }){
@@ -16,16 +15,16 @@ export default async function PrivateRootLayout({ children, params }: { children
     }
 
     return (
-        <main className="h-dvh max-h-dvh overflow-hidden w-full flex flex-col">
-            <NavContextProvider>
-                <Navbar />
-                <div className="flex flex-1">
-                    <Sidebar slug={slug} />
-                    <Container className="flex justify-center overflow-y-auto">
+        <SidebarProvider>
+            <main className="flex h-screen w-full overflow-hidden">
+                <AppSidebar slug={slug} />
+                <section className="flex flex-1 flex-col overflow-hidden">
+                    <Navbar />
+                    <SidebarInset className="overflow-y-auto">
                         {children}
-                    </Container>
-                </div>
-            </NavContextProvider>
-        </main>
+                    </SidebarInset>
+                </section>
+            </main>
+        </SidebarProvider>
     )
 }
