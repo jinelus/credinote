@@ -28,7 +28,12 @@ export async function createOrganization(params: CreateOrganizationParams) {
             }
         })
     
-        return organization
+        return {
+            success: true,
+            data: {
+                organization,
+            }
+        }
     })
 
     return result
