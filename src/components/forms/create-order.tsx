@@ -10,8 +10,8 @@ import { useState } from 'react'
 import { addOrder } from '@/src/app/(app)/(private)/[slug]/nova-compra/actions'
 import { handleCpfInputFormatting } from '@/src/utils/format'
 import { toast } from 'sonner'
-import { Input } from '@/components/ui/input'
 import { z } from 'zod'
+import { Input } from '../ui/input'
 
 const formSchema = z.object({
   total: z.coerce.number().min(1, 'O valor é obrigatório'),
@@ -100,39 +100,41 @@ export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) 
       <h1 className="text-3xl font-bold mb-8 text-slate-800">Nova Compra</h1>
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-14">
-          <div className="flex flex-col gap-2">
-            <label htmlFor="clientCpf" className="text-sm font-medium">
-              CPF do Cliente
-            </label>
-            <div className="flex gap-2">
-              <Input
-                id="clientCpf"
-                type="text"
-                placeholder="000.000.000-00"
-                {...form.register('clientCpf')}
-                maxLength={14}
-                onChange={(e) => {
-                  handleCpfInputFormatting(e)
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="clientCpf" className="text-sm font-medium">
+                CPF do Cliente
+              </label>
+              <div className="flex gap-2">
+                <Input
+                  id="clientCpf"
+                  type="text"
+                  placeholder="000.000.000-00"
+                  {...form.register('clientCpf')}
+                  maxLength={14}
+                  onChange={(e) => {
+                    handleCpfInputFormatting(e)
 
-                  if (e.target.value.length === 14) {
-                    handleCpfSearch(e.target.value)
-                  }
-                }}
-                disabled={!!client}
-                className='disabled:bg-gray-200 disabled:border-gray-200 disabled:text-gray-800'
-              />
-              {isLoading && <Button
-                type="button"
-                className='flex w-10 items-center justify-center'
-              >
-                <Spinner /> 
-              </Button>}
+                    if (e.target.value.length === 14) {
+                      handleCpfSearch(e.target.value)
+                    }
+                  }}
+                  disabled={!!client}
+                  className='disabled:bg-gray-200 disabled:border-gray-200 disabled:text-gray-800'
+                />
+                {isLoading && <Button
+                  type="button"
+                  className='flex w-10 items-center justify-center'
+                >
+                  <Spinner /> 
+                </Button>}
+              </div>
+              {form.formState.errors.clientCpf && (
+                <p className="text-sm text-red-500">
+                  {form.formState.errors.clientCpf.message}
+                </p>
+              )}
             </div>
-            {form.formState.errors.clientCpf && (
-              <p className="text-sm text-red-500">
-                {form.formState.errors.clientCpf.message}
-              </p>
-            )}
           </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -143,7 +145,7 @@ export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) 
             <Input
               id="clientName"
               type="text"
-              className='bg-gray-200 border-gray-200 text-gray-800'
+              className='bg-gray-100 border-gray-100 text-slate-900'
               disabled
               value={form.control._getWatch('clientName')}
               {...form.register('clientName')}
