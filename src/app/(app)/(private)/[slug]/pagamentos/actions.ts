@@ -2,6 +2,7 @@
 
 import { prisma } from "@/src/db/prisma"
 import { withErrorHandling } from "@/src/utils/error-handler"
+import type { PaginationParams } from "@/src/utils/types"
 import { PaymentMethod } from "@prisma/client"
 
 export type Payment = {
@@ -14,11 +15,8 @@ export type Payment = {
 }
 
 export interface FetchPaymentsParams {
-  userId: string
-  params: {
-    page?: number
-    sortBy?: string
-  }
+  organizationId: string
+  params?: PaginationParams
 }
 
 export interface CreatePaymentParams {
@@ -26,19 +24,23 @@ export interface CreatePaymentParams {
   method: PaymentMethod
   clientId: string
   paidAt: Date
+  slug: string
 }
 
-export async function fetchPayments({ userId, params }: FetchPaymentsParams) {
+export async function fetchPayments({ organizationId, params }: FetchPaymentsParams) {
   const result = await withErrorHandling(async () => {
-    const page = params.page || 1
-    const pageSize = 10
-    const skip = (page - 1) * pageSize
+    const page = params?.page || 1
+    const perPage = params?.perPage || 10
 
     const payments = await prisma.payment.findMany({
       where: {
         client: {
-          userId
-        }
+          organizationId,
+          name: {
+            contains: params?.search,
+            mode: 'insensitive',
+          }
+        },
       },
       include: {
         client: {
@@ -47,21 +49,43 @@ export async function fetchPayments({ userId, params }: FetchPaymentsParams) {
           }
         }
       },
-      skip,
-      take: pageSize,
-      orderBy: {
-        paidAt: 'desc'
-      }
+      take: perPage,
+      skip: (page - 1) * perPage,
+      orderBy: params?.orderBy === 'createdAt' ? {
+        paidAt: params?.order
+      } : params?.orderBy === 'amount' ? {
+        amount: params?.order
+      } : { paidAt: 'desc' }
     })
 
-    return payments.map(payment => ({
-      id: payment.id,
-      amount: Number(payment.amount),
-      method: payment.method,
-      paidAt: payment.paidAt,
-      clientId: payment.clientId,
-      clientName: payment.client.name
-    }))
+    const paymentsCount = await prisma.payment.count({
+      where: {
+          client: {
+              name: {
+                  contains: params?.search,
+                  mode: 'insensitive',
+              }
+          },
+      },
+    })
+    
+    const maxPage = Math.ceil(paymentsCount / (perPage ?? 10))
+
+    return {
+      success: true,
+      data: {
+        payments: payments.map(payment => ({
+          id: payment.id,
+          amount: Number(payment.amount),
+          method: payment.method,
+          paidAt: payment.paidAt,
+          clientId: payment.clientId,
+          clientName: payment.client.name
+        })),
+        maxPage,
+        totalItems: paymentsCount,
+      }
+    }
   })
 
   return result
@@ -81,16 +105,24 @@ export async function getPaymentById(id: string) {
     })
 
     if (!payment) {
-      return null
+      return {
+        success: false,
+        error: 'Pagamento não encontrado'
+      }
     }
 
     return {
-      id: payment.id,
-      amount: Number(payment.amount),
-      method: payment.method,
-      paidAt: payment.paidAt,
-      clientId: payment.clientId,
-      clientName: payment.client.name
+      success: true,
+      data: {
+        payment: {
+          id: payment.id,
+          amount: Number(payment.amount),
+          method: payment.method,
+          paidAt: payment.paidAt,
+          clientId: payment.clientId,
+          clientName: payment.client.name
+        }
+      }
     }
   })
 
@@ -101,9 +133,38 @@ export async function createPayment({
   amount,
   method,
   clientId,
-  paidAt
+  paidAt,
+  slug,
 }: CreatePaymentParams) {
-  const result = await withErrorHandling(async () => {
+  const result = await withErrorHandling(
+    async () => {
+
+      const organization = await prisma.organization.findUnique({
+        where: {
+            slug
+        }
+    })
+
+    if (!organization) {
+        return {
+            success: false,
+            error: 'Organização não encontrada'
+        }
+    }
+
+    const client = await prisma.client.findUnique({
+      where: {
+          id: clientId
+      }
+    })
+
+    if (!client) {
+        return {
+            success: false,
+            error: 'Cliente não encontrado'
+        }
+    }
+
     const payment = await prisma.payment.create({
       data: {
         amount,
@@ -120,13 +181,42 @@ export async function createPayment({
       }
     })
 
+    if (Number(client.amount) === 0) {
+        return {
+            success: false,
+            error: "O saldo do cliente já está zerado, impossível subtrair."
+        }
+    }
+    if (amount > Number(client.amount)) {
+        return {
+            success: false,
+            error: "O valor do pagamento não pode ser maior que o saldo do cliente."
+        }
+    }
+
+    const newAmount = Number(client.amount) - amount
+
+        await prisma.client.update({
+            where: {
+                id: client.id,
+            },
+            data: {
+                amount: newAmount
+            }
+        })
+
     return {
-      id: payment.id,
-      amount: Number(payment.amount),
-      method: payment.method,
-      paidAt: payment.paidAt,
-      clientId: payment.clientId,
-      clientName: payment.client.name
+      success: true,
+      data: {
+        payment: {
+          id: payment.id,
+          amount: Number(payment.amount),
+          method: payment.method,
+          paidAt: payment.paidAt,
+          clientId: payment.clientId,
+          clientName: payment.client.name
+        }
+      }
     }
   })
 
