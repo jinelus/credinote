@@ -1,7 +1,8 @@
 'use client'
 
-import { CircleUserRound, MapPinHouse } from "lucide-react"
+import { MapPinHouse } from "lucide-react"
 import { SidebarCustomTrigger } from "./sidebar-trigger"
+import { ProfileButton } from "./profile-button"
 
 export const Navbar = () => {
 
@@ -22,7 +23,7 @@ export const Navbar = () => {
                     </span>
                 </div>
                 <div className="cursor-pointer text-lg">
-                    <CircleUserRound size={28} />
+                    <ProfileButton />
                 </div>
             </div>
 
