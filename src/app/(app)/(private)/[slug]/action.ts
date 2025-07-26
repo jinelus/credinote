@@ -4,13 +4,38 @@ import { prisma } from "@/src/db/prisma"
 import { withErrorHandling } from "@/src/utils/error-handler"
 import type { PaginationParams } from "@/src/utils/types"
 
-export async function getOrders({ page = 1, perPage = 10 }: PaginationParams) {
+export async function getOrders({ page = 1, perPage = 10, order, orderBy, search }: PaginationParams) {
     const result = await withErrorHandling(async () => {
         const orders = await prisma.order.findMany({
+            where: {
+                client: {
+                    name: {
+                        contains: search,
+                        mode: 'insensitive',
+                    }
+                },
+            },
             take: perPage,
             skip: (page - 1) * perPage,
+            orderBy: orderBy === 'createdAt' ? {
+                date: order
+            } : orderBy === 'amount' ? {
+                total: order
+            } : {}
+        })
+
+        const ordersCount = await prisma.order.count({
+            where: {
+                client: {
+                    name: {
+                        contains: search,
+                        mode: 'insensitive',
+                    }
+                },
+            },
         })
         
+        const maxPage = Math.ceil(ordersCount / (perPage ?? 10))
 
         const data =  await Promise.all(
             orders.map(async (order) => {
@@ -33,7 +58,11 @@ export async function getOrders({ page = 1, perPage = 10 }: PaginationParams) {
 
         return {
             success: true,
-            data,
+            data: {
+                orders: data,
+                maxPage,
+                totalItems: ordersCount
+            },
         }
     })
 
