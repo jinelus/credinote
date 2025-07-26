@@ -5,10 +5,15 @@ import Button from '@/src/components/base-components/button'
 import Link from 'next/link'
 import { fetchClients } from '@/src/app/(app)/(private)/[slug]/clientes/actions'
 import { createLoader, parseAsInteger, parseAsString, type SearchParams } from 'nuqs/server'
+import { OrderSelect } from '@/src/components/filter/order-select'
 
 const filterSearchParams = {
   client: parseAsString,
-  page: parseAsInteger
+  page: parseAsInteger,
+  perPage: parseAsInteger,
+  search: parseAsString,
+  orderBy: parseAsString,
+  order: parseAsString
 }
 
 const loadSearchParams = createLoader(filterSearchParams)
@@ -20,23 +25,27 @@ export default async function ClientsPage({
   searchParams: Promise<SearchParams>
   params: Promise<{ slug: string }>
 }) {
-  const { client, page } = await loadSearchParams(searchParams)
+  const queries = await loadSearchParams(searchParams)
   const { slug } = await params
 
-  const clients = await fetchClients({ 
-    slug, 
+  const response = await fetchClients({ 
+    slug,
     params: {
-      page: Number(page) || 1
-    } 
+      perPage: queries.perPage ?? 10,
+      page: queries.page ?? 1,
+      search: queries.search ?? '',
+      order: queries.order as ('asc' | 'desc') ?? 'desc',
+      orderBy: queries.orderBy ?? 'createdAt'
+    }
   })
 
-  if(!clients.success) {
+  if(!response.success) {
     return
   }
 
 
-  const selectedClient = client 
-    ? clients.data?.find(c => c.id === client)
+  const selectedClient = queries.client 
+    ? response.data.clients?.find(c => c.id === queries.client)
     : null
 
   return (
@@ -44,16 +53,7 @@ export default async function ClientsPage({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">Clientes</h1>
         <div className='flex items-center gap-4'>
-          <select
-            // value={sortBy}
-            // onChange={}
-            className="h-10 hover:cursor-pointer rounded-md bg-white border border-slate-700 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-800"
-          >
-            <option value="date-desc">Data (mais recente)</option>
-            <option value="date-asc">Data (mais antiga)</option>
-            <option value="value-desc">Valor (maior)</option>
-            <option value="value-asc">Valor (menor)</option>
-          </select>
+          <OrderSelect />
           <Link href={`/${slug}/novo-cliente`}>
             <Button
               className="bg-slate-800 text-white hover:bg-slate-900"
@@ -67,10 +67,12 @@ export default async function ClientsPage({
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex-1 min-w-0">
           <ClientList 
-            clients={clients.data ?? []}
-            selectedClientId={client || null}
-            currentPage={page ?? 1}
+            clients={response.data.clients ?? []}
+            selectedClientId={queries.client || null}
+            currentPage={queries.page ?? 1}
             slug={slug}
+            maxPage={response.data.maxPage}
+            totalItems={response.data.total}
           />
         </div>
 
@@ -79,7 +81,7 @@ export default async function ClientsPage({
             <ClientDetailsCard
               client={selectedClient}
               slug={slug}
-              redirectCancelLink={`/${slug}/clientes?page=${page}`}
+              redirectCancelLink={`/${slug}/clientes?page=${queries.page}`}
             />
           </div>
         )}

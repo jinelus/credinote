@@ -1,7 +1,7 @@
 
 import { Container } from '@/src/components/base-components/container'
 import Button from '@/src/components/base-components/button'
-import { Plus, Users, ShoppingCart, Package } from 'lucide-react'
+import { Plus, Users, Package, HandCoins } from 'lucide-react'
 import { Card } from '@/src/components/base-components/card'
 import Link from 'next/link'
 import { getClient, getOrders } from './action'
@@ -42,17 +42,17 @@ export default async function DashboardPage({
       color: 'bg-green-500'
     },
     {
-      title: 'Pedidos',
-      description: 'Gerencie os pedidos',
+      title: 'Nova Compra',
+      description: 'Cadastre um nova compra',
       icon: <Package className="w-6 h-6" />,
-      href: `/${slug}/pedidos`,
+      href: `/${slug}/nova-compra`,
       color: 'bg-purple-500'
     },
     {
-      title: 'Compras',
-      description: 'Registre novas compras',
-      icon: <ShoppingCart className="w-6 h-6" />,
-      href: `/${slug}/compras`,
+      title: 'Novo Pagamento',
+      description: 'Registre novo pagamento',
+      icon: <HandCoins className="w-6 h-6" />,
+      href: `/${slug}/novo-pagamento`,
       color: 'bg-orange-500'
     }
   ]
@@ -66,8 +66,8 @@ export default async function DashboardPage({
   const selectedClient = client ? await getClient(client) : null
 
   return (
-    <Container className="min-h-screen">
-      <div className="space-y-8">
+    <Container>
+      <div className="space-y-8 pb-8">
         <div>
           <h1 className="text-3xl font-bold text-slate-800">Dashboard</h1>
           <p className="text-slate-600 mt-2">Bem-vindo ao seu painel de controle</p>
@@ -121,7 +121,7 @@ export default async function DashboardPage({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200">
-                    {recentOrders.data.length > 0 ? recentOrders.data.map((order, index) => (
+                    {recentOrders.data.orders.length > 0 ? recentOrders.data.orders.map((order, index) => (
                       <OrderList
                         key={order.id}
                         index={index}
