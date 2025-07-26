@@ -24,8 +24,12 @@ export interface DeleteClientUseCaseProps {
 
 export interface FetchClientsParams {
     slug: string
-    params: {
+    params?: {
         page?: number
+        perPage: number
+        search?: string
+        order?: 'asc' | 'desc'
+        orderBy?: string
     }
 }
 
@@ -176,25 +180,83 @@ export async function fetchClients({ slug, params }: FetchClientsParams) {
     })
 
     const result = await withErrorHandling(async () => {
-        const { page = 1 } = params
-    
+
+        const perPage = params?.perPage || 10
+        const page = params?.page || 1
+        
         const clients = await prisma.client.findMany({
             where: {
                 organizationId: organization?.id,
+                ...(params?.search ? {
+                    OR: [
+                        {
+                            name: {
+                                contains: params.search,
+                                mode: 'insensitive'
+                            }
+                        },
+                        {
+                            cpf: {
+                                contains: params.search,
+                                mode: 'insensitive',
+                            }
+                        },
+                        {
+                            telephone: {
+                                contains: params.search,
+                                mode: 'insensitive'
+                            }
+                        }
+                    ]
+                } : {})
             },
-            skip: (page - 1) * 10,
-            take: 10,
+            skip: (page - 1) * perPage,
+            take: perPage,
             orderBy: {
-                createdAt: 'desc'
+                [params?.orderBy || 'createdAt']: params?.order
             }
         })
-    
+
+        const clientsCount = await prisma.client.count({
+            where: {
+                organizationId: organization?.id,
+                ...(params?.search ? {
+                    OR: [
+                        {
+                            name: {
+                                contains: params.search,
+                                mode: 'insensitive'
+                            }
+                        },
+                        {
+                            cpf: {
+                                contains: params.search,
+                                mode: 'insensitive',
+                            }
+                        },
+                        {
+                            telephone: {
+                                contains: params.search,
+                                mode: 'insensitive'
+                            }
+                        }
+                    ]
+                } : {})
+            }
+        })
+
+        const maxPage = Math.ceil(clientsCount / (params?.perPage ?? 10))
+
         return {
             success: true,
-            data: clients.map((client) => ({
-                ...client,
-                amount: Number(client.amount)
-            }))
+            data: {
+                clients: clients.map((client) => ({
+                    ...client,
+                    amount: Number(client.amount)
+                })),
+                total: clientsCount,
+                maxPage,
+            }
         }
     })
 
@@ -224,7 +286,7 @@ export async function getClientByCpf({ slug, cpf }: GetClientByCpfParams) {
         if (!client) {
             return {
                 success: false,
-                error: 'Client not found'
+                error: 'Cliente não encontrado!'
             }
         }
     

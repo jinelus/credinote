@@ -1,12 +1,11 @@
 'use client'
 
-import { useSidebar } from '@/components/ui/sidebar'
 
+import { useSidebar } from '../ui/sidebar'
 import { AnimatedHamburgerButton } from './hamburger'
 
 export function SidebarCustomTrigger() {
   const { toggleSidebar, open } = useSidebar()
-
 
   return (
     <button

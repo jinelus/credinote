@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import * as z from "zod"
 import Button from "@/src/components/base-components/button"
 import { Input } from "@/src/components/base-components/input"
@@ -14,11 +14,12 @@ import { getClientByCpf } from "@/src/app/(app)/(private)/[slug]/clientes/action
 import { ClientResponse } from "@/src/app/(app)/(private)/[slug]/clientes/actions"
 import { PaymentMethod } from "@prisma/client"
 import { handleCpfInputFormatting } from "@/src/utils/format"
+import { toast } from "sonner"
 
 const paymentSchema = z.object({
   clientId: z.string().min(1, "Cliente é obrigatório"),
   clientCpf: z.string().min(14, 'CPF inválido'),
-  amount: z.number().min(1, "Valor é obrigatório"),
+  amount: z.coerce.number().min(1, "Valor é obrigatório"),
   paymentMethod: z.enum(["CASH", "CARD", "PIX"], {
     required_error: "Método de pagamento é obrigatório",
   }),
@@ -61,22 +62,41 @@ export default function CreatePaymentForm({ slug, client }: CreatePaymentFormPro
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentSchema),
     defaultValues: {
-      clientId: client?.id ?? "",
+      clientId: client?.id ?? '',
       clientCpf: client?.cpf || '',
       amount: 0,
+      paymentMethod: paymentMethods[0].id,
     },
   })
 
-  const onSubmit = async (data: PaymentFormValues) => {
-    const result = await createPayment({
-      clientId: data.clientId,
-      amount: Number(data.amount),
-      method: data.paymentMethod,
-      paidAt: new Date()
-    })
+  const amount = useWatch({
+    control: form.control,
+    name: 'amount'
+  })
 
-    if (result.success) {
-      router.push(`/${slug}/pagamentos`)
+  const onSubmit = async (data: PaymentFormValues) => {
+    const toastWaiting = toast.loading('Cadastrando pagamento...')
+    
+    try {
+      const result = await createPayment({
+        clientId: data.clientId,
+        amount: Number(data.amount),
+        method: data.paymentMethod,
+        paidAt: new Date(),
+        slug,
+      })
+  
+      toast.dismiss(toastWaiting)
+  
+      if (result.success) {
+        toast.success('Pagamento cadastrado com successo')
+        router.push(`/${slug}/pagamentos`)
+      } else {
+        toast.error(result.error)
+      }
+    } catch (error) {
+      toast.error('Error ao cadastrar o pagamento')
+      console.error(error)
     }
   }
 
@@ -111,57 +131,61 @@ export default function CreatePaymentForm({ slug, client }: CreatePaymentFormPro
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="client">Cliente</Label>
-            <div className="relative">
-              <div className="relative">
-                {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" /> */}
-                <Input
-                  id="client"
-                  placeholder="Digite o CPF do cliente"
-                  {...form.register('clientCpf')}
-                  maxLength={14}
-                  onChange={(e) => {
-                    handleCpfInputFormatting(e)
-
-                    if (e.target.value.length === 14) {
-                      handleCpfSearch(e.target.value)
-                    }
-                  }}
-                  disabled={!!client}
-                  className='disabled:bg-gray-200 disabled:border-gray-200 disabled:text-gray-800'
-                />
-              </div>
-              {isSearching && (
-                <div className="absolute inset-0 bg-white/50 flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-slate-800"></div>
+          <div className="flex gap-6">
+            <div className="flex flex-col gap-2">
+              <div className="space-y-2">
+                <Label htmlFor="client">Cliente</Label>
+                <div className="relative flex gap-4">
+                  <div className="relative">
+                    {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" /> */}
+                    <Input
+                      id="client"
+                      placeholder="Digite o CPF do cliente"
+                      {...form.register('clientCpf')}
+                      maxLength={14}
+                      onChange={(e) => {
+                        handleCpfInputFormatting(e)
+                        
+                        if (e.target.value.length === 14) {
+                          handleCpfSearch(e.target.value)
+                        }
+                      }}
+                      disabled={!!client}
+                      className='disabled:bg-gray-200 disabled:border-gray-200 disabled:text-gray-800'
+                      />
+                  </div>
+                  {isSearching && (
+                    <div className="bg-white/50 flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-slate-800"></div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
+              </div>
 
-          {selectedClient && (
-            <div className="p-4 bg-slate-50 rounded-lg flex flex-col gap-4">
-              <div className="font-bold text-lg">{selectedClient.name}</div>
-              <div className="text-sm text-slate-600 font-semibold">CPF: {selectedClient.cpf}</div>
-              <div className="text-sm text-slate-600 font-semibold">Telefone: {selectedClient.telephone}</div>
-              <div className="text-sm text-slate-600 font-semibold">Saldo: R$ {selectedClient.amount.toFixed(2)}</div>
+              <div className="space-y-2">
+                <Label htmlFor="amount">Valor</Label>
+                <div>
+                  <Input
+                    id="amount"
+                    type="number"
+                    step="0.01"
+                    {...form.register("amount")}
+                    className="flex"
+                    />
+                  {form.formState.errors.amount && (
+                    <p className="text-sm text-red-500">{form.formState.errors.amount.message}</p>
+                  )}
+                </div>
+              </div>
             </div>
-          )}
-
-          <div className="space-y-2">
-            <Label htmlFor="amount">Valor</Label>
-            <div>
-              <Input
-                id="amount"
-                placeholder="0,00"
-                {...form.register("amount")}
-                className="flex"
-              />
-              {form.formState.errors.amount && (
-                <p className="text-sm text-red-500">{form.formState.errors.amount.message}</p>
-              )}
-            </div>
+            {selectedClient && (
+              <div className="p-4 md:p-8 bg-slate-50 rounded-lg flex flex-col gap-4">
+                <div className="font-bold text-lg">{selectedClient.name}</div>
+                <div className="text-sm text-slate-600 font-semibold">CPF: {selectedClient.cpf}</div>
+                <div className="text-sm text-slate-600 font-semibold">Telefone: {selectedClient.telephone}</div>
+                <div className="text-sm text-slate-600 font-semibold">Saldo: R$ {selectedClient.amount.toFixed(2)}</div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -172,7 +196,7 @@ export default function CreatePaymentForm({ slug, client }: CreatePaymentFormPro
                   key={method.id}
                   className={`p-4 cursor-pointer transition-all ${
                     form.watch("paymentMethod") === method.id
-                      ? "border-2 border-slate-800 bg-slate-50"
+                      ? "border border-slate-800 bg-slate-50"
                       : "hover:border-slate-300"
                   }`}
                   onClick={() => form.setValue("paymentMethod", method.id)}
@@ -201,7 +225,9 @@ export default function CreatePaymentForm({ slug, client }: CreatePaymentFormPro
           >
             Annuler
           </Button>
-          <Button type="submit">Enregistrer</Button>
+          <Button type="submit" disabled={amount <= 0 || form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? 'Cadastramento...' : 'Cadastrar'}
+          </Button>
         </div>
       </form>
     </div>

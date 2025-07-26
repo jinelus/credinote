@@ -1,10 +1,10 @@
 'use client'
 
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { FC, ReactNode, useMemo } from 'react'
+import { SidebarMenuButton, useSidebar } from '../ui/sidebar'
 
-import { SidebarMenuButton, useSidebar } from '@/components/ui/sidebar'
-import Link from 'next/link'
 
 export const LinkItems: FC<{
   item: {
@@ -24,6 +24,7 @@ export const LinkItems: FC<{
     <SidebarMenuButton asChild>
       <Link
         href={item.href}
+        className={`text-lg w-full`}
         onClick={() => setOpenMobile(false)}
       >
         {isActive ? item.icon.active : item.icon.inactive}

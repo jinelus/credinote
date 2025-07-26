@@ -1,7 +1,7 @@
 import { Card } from '@/src/components/base-components/card'
-import Button from '@/src/components/base-components/button'
 import { User, X } from 'lucide-react'
 import Link from 'next/link'
+import { Button } from '../ui/button'
 
 interface Client {
   id: string
@@ -62,12 +62,20 @@ export function ClientDetailsCard({ client, slug, redirectCancelLink }: ClientDe
               </div>
             </div>
 
-            <div className="pt-6">
+            <div className="pt-6 flex gap-4 items-center justify-between flex-wrap w-full">
               <Link href={`/${slug}/nova-compra?client=${client.id}`}>
+                <Button
+                  variant='outline'
+                  className="w-full"
+                  >
+                  Nova Compra
+                </Button>
+              </Link>
+              <Link href={`/${slug}/novo-pagamento?client=${client.id}`}>
                 <Button
                   className="w-full bg-slate-800 text-white hover:bg-slate-900"
                   >
-                  Nova Compra
+                  Novo Pagamento
                 </Button>
               </Link>
             </div>

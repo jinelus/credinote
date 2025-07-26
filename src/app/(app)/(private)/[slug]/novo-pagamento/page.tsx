@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createLoader, parseAsString, type SearchParams } from 'nuqs/server'
 import { getClientById } from '@/src/app/(app)/(private)/[slug]/clientes/actions'
 import CreatePaymentForm from '@/src/components/forms/create-payment'
+import { Container } from '@/src/components/base-components/container'
 
 const clientIdSearchParams = {
   client: parseAsString,
@@ -38,8 +39,8 @@ export default async function CreatePaymentPage({
 
 
   return (
-    <div className="">
+    <Container className="">
       <CreatePaymentForm slug={slug} client={clientFetched} />
-    </div>
+    </Container>
   )
 } 

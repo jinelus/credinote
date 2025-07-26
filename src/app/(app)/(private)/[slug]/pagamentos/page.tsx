@@ -2,15 +2,22 @@ import { Container } from '@/src/components/base-components/container'
 import { getOrganizationBySlug } from '@/src/app/actions/organization'
 import { redirect } from 'next/navigation'
 import { createLoader, parseAsInteger, parseAsString, type SearchParams } from 'nuqs/server'
-import Button from '@/src/components/base-components/button'
-import Link from 'next/link'
 import { PaymentList } from '@/src/components/payments/payment-list'
-import { PaymentDetailsCard } from '@/src/components/payments/payment-details-card'
-import { fetchPayments, getPaymentById } from './actions'
+import { fetchPayments } from './actions'
+import { OrderSelect } from '@/src/components/filter/order-select'
+import { SearchFilter } from '@/src/components/filter/search'
+import type { PaginationParams } from '@/src/utils/types'
+import { PaginationButtons } from '@/src/components/pagination'
+import Link from 'next/link'
+import Button from '@/src/components/base-components/button'
 
 const filterSearchParams = {
   payment: parseAsString,
-  page: parseAsInteger
+  perPage: parseAsInteger,
+  page: parseAsInteger,
+  orderBy: parseAsString,
+  order: parseAsString,
+  search: parseAsString,
 }
 
 const loadSearchParams = createLoader(filterSearchParams)
@@ -22,8 +29,16 @@ export default async function PaymentsPage({
   searchParams: Promise<SearchParams>
   params: Promise<{ slug: string }>
 }) {
-  const { payment, page } = await loadSearchParams(searchParams)
+  const queries = await loadSearchParams(searchParams)
   const { slug } = await params
+
+  const defaultParams: PaginationParams = {
+    page: queries.page ?? 1,
+    perPage: queries.perPage ?? 10,
+    orderBy: queries.orderBy ?? 'createdAt',
+    order: queries.order as ('asc' | 'desc') ?? 'desc',
+    search: queries.search ?? ''
+}
 
   const organization = await getOrganizationBySlug(slug)
 
@@ -31,63 +46,44 @@ export default async function PaymentsPage({
     redirect('/signin')
   }
 
-  const payments = await fetchPayments({ 
-    userId: organization.id, 
-    params: {
-      page: Number(page) || 1
-    } 
+  const response = await fetchPayments({ 
+    organizationId: organization.id, 
+    params: defaultParams
   })
 
-  if(!payments.success) {
+  if(!response.success) {
     return
   }
 
-  const selectedPayment = payment 
-    ? await getPaymentById(payment)
-    : null
 
   return (
     <Container className="min-h-screen">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">Pagamentos</h1>
-        <div className='flex items-center gap-4'>
-          <select
-            className="h-10 hover:cursor-pointer rounded-md bg-white text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-800"
-          >
-            <option value="date-desc">Data (mais recente)</option>
-            <option value="date-asc">Data (mais antiga)</option>
-            <option value="value-desc">Valor (maior)</option>
-            <option value="value-asc">Valor (menor)</option>
-          </select>
-          <Link href={`/${slug}/novo-pagamento`}>
-            <Button
-              className="bg-slate-800 text-white hover:bg-slate-900"
-              size='sm'
-            >
-              Novo Pagamento
-            </Button>
-          </Link>
-        </div>
+        <div className='flex flex-col gap-4 w-full'>
+            <div className="flex items-center justify-between w-full">
+               <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">Pagamentos</h1>
+               <div className='flex items-center gap-4'>
+                 <OrderSelect />
+                 <Link href={`/${slug}/novo-pagamento`}>
+                    <Button className=''>
+                      Novo pagemento
+                    </Button>
+                 </Link>
+               </div>
+            </div>
+            <SearchFilter placeholder="Buscar por nome..." />
+          </div>
       </div>
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="flex-1 min-w-0">
+      <div className="flex flex-col gap-8">
+        <div className="w-full">
           <PaymentList 
-            payments={payments.data ?? []}
-            selectedPaymentId={payment || null}
-            currentPage={page ?? 1}
+            payments={response.data.payments ?? []}
+            selectedPaymentId={queries.payment || null}
+            currentPage={queries.page ?? 1}
             slug={slug}
           />
+          <PaginationButtons currentPage={queries.page ?? 1} maxPage={response.data.maxPage} />
         </div>
-
-        {selectedPayment?.success && selectedPayment.data && (
-          <div className="lg:w-96 w-full">
-            <PaymentDetailsCard
-              payment={selectedPayment.data}
-              slug={slug}
-              redirectCancelLink={`/${slug}/pagamentos?page=${page}`}
-            />
-          </div>
-        )}
       </div>
     </Container>
   )

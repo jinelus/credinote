@@ -15,7 +15,7 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
   }
 
   return (
-    <Container className="min-h-screen">
+    <Container className="">
       <CreateClientForm slug={slug} />
     </Container>
   )
