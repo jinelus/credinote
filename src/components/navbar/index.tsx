@@ -6,7 +6,7 @@ import { SidebarCustomTrigger } from "./sidebar-trigger"
 export const Navbar = () => {
 
     return (
-        <nav className="w-full flex items-center justify-between md:justify-between py-5 px-20 gap-6 border-b border-slate-200">
+        <nav className="w-full h-24 flex items-center justify-between md:justify-between py-5 px-20 gap-6 border-b border-slate-200">
             <div className="flex items-center gap-6">
                 <SidebarCustomTrigger />
                 <div className="text-2xl font-bold text-slate-800">
