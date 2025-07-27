@@ -5,18 +5,14 @@ import { formatCurrency } from '@/src/lib/utils'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 
 type PaymentListProps = {
   payments: Payment[]
-  selectedPaymentId: string | null
   currentPage: number
   slug: string
 }
 
-export function PaymentList({ payments, selectedPaymentId, currentPage, slug }: PaymentListProps) {
-
-  const router = useRouter()
+export function PaymentList({ payments, currentPage, slug }: PaymentListProps) {
 
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -42,10 +38,7 @@ export function PaymentList({ payments, selectedPaymentId, currentPage, slug }: 
             {payments.map((payment) => (
               <tr
                 key={payment.id}
-                className={`hover:bg-slate-50 cursor-pointer ${
-                  selectedPaymentId === payment.id ? 'bg-slate-100' : ''
-                }`}
-                onClick={() => router.push(`/${slug}/pagamentos?payment=${payment.id}`)}
+                className={`hover:bg-slate-50`}
               >
                 <td className="px-6 py-4 whitespace-nowrap text-center">
                   <Link

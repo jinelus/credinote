@@ -57,7 +57,7 @@ export default async function DashboardPage({
     }
   ]
 
-  const recentOrders = await getOrders({ perPage: 5 })
+  const recentOrders = await getOrders(slug, { perPage: 5 })
 
   if (!recentOrders.success || !recentOrders.data) {
     return

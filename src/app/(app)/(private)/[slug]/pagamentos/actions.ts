@@ -165,6 +165,19 @@ export async function createPayment({
         }
     }
 
+    if (Number(client.amount) === 0) {
+        return {
+            success: false,
+            error: "O saldo do cliente já está zerado, impossível subtrair."
+        }
+    }
+    if (amount > Number(client.amount)) {
+        return {
+            success: false,
+            error: "O valor do pagamento não pode ser maior que o saldo do cliente."
+        }
+    }
+
     const payment = await prisma.payment.create({
       data: {
         amount,
@@ -180,19 +193,6 @@ export async function createPayment({
         }
       }
     })
-
-    if (Number(client.amount) === 0) {
-        return {
-            success: false,
-            error: "O saldo do cliente já está zerado, impossível subtrair."
-        }
-    }
-    if (amount > Number(client.amount)) {
-        return {
-            success: false,
-            error: "O valor do pagamento não pode ser maior que o saldo do cliente."
-        }
-    }
 
     const newAmount = Number(client.amount) - amount
 

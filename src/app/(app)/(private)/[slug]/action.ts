@@ -4,14 +4,18 @@ import { prisma } from "@/src/db/prisma"
 import { withErrorHandling } from "@/src/utils/error-handler"
 import type { PaginationParams } from "@/src/utils/types"
 
-export async function getOrders({ page = 1, perPage = 10, order, orderBy, search }: PaginationParams) {
+export async function getOrders(slug: string, { page = 1, perPage = 10, order, orderBy, search }: PaginationParams) {
     const result = await withErrorHandling(async () => {
+
         const orders = await prisma.order.findMany({
             where: {
                 client: {
                     name: {
                         contains: search,
                         mode: 'insensitive',
+                    },
+                    organization: {
+                        slug,
                     }
                 },
             },
@@ -21,7 +25,9 @@ export async function getOrders({ page = 1, perPage = 10, order, orderBy, search
                 date: order
             } : orderBy === 'amount' ? {
                 total: order
-            } : {}
+            } : {
+                date: 'desc',
+            }
         })
 
         const ordersCount = await prisma.order.count({
