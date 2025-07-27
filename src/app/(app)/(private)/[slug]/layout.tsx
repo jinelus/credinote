@@ -2,15 +2,17 @@ import { SidebarInset, SidebarProvider } from "../../../../components/ui/sidebar
 import { getOrganizationBySlug } from "@/src/app/actions/organization";
 import { Navbar } from "@/src/components/navbar";
 import { AppSidebar } from "@/src/components/sidebar";
+import { getSession } from "@/src/lib/get-session";
 import { redirect } from "next/navigation";
 
 export default async function PrivateRootLayout({ children, params }: { children: React.ReactNode, params: Promise<{ slug: string }> }){
 
     const slug = (await params).slug
+    const session = await getSession()
 
     const organization = await getOrganizationBySlug(slug)
 
-    if (!organization) {
+    if (!organization || !session) {
         redirect('/signin')
     }
 

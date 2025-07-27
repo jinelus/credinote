@@ -78,7 +78,6 @@ export default async function PaymentsPage({
         <div className="w-full">
           <PaymentList 
             payments={response.data.payments ?? []}
-            selectedPaymentId={queries.payment || null}
             currentPage={queries.page ?? 1}
             slug={slug}
           />

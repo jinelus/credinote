@@ -5,6 +5,7 @@ import { withErrorHandling } from "@/src/utils/error-handler"
 
 export interface CreateOrganizationParams {
     name: string
+    userId: string
 }
 
 function generateSlug(name: string): string {
@@ -25,6 +26,15 @@ export async function createOrganization(params: CreateOrganizationParams) {
             data: {
                 name,
                 slug: generateSlug(name)
+            }
+        })
+
+        await prisma.user.update({
+            where: {
+                id: params.userId,
+            },
+            data: {
+                organizationId: organization.id
             }
         })
     

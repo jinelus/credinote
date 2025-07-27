@@ -40,7 +40,7 @@ export default async function OrdersPage({
         search: queries.search ?? ''
     }
 
-    const response = await getOrders(defaultParams)
+    const response = await getOrders(slug, defaultParams)
 
     if (!response.success || !response.data) {
         return

@@ -34,6 +34,12 @@ export default function CreateClientForm({ slug }: { slug: string }) {
   const onSubmit = async (data: ClientFormData) => {
 
     try {
+
+      if (data.cpf.length < 14) {
+        toast.error('O formato do CPF está errado! Por favor, confere de novo!')
+        return 
+      }
+
       const clientData = {
         ...data
       }
