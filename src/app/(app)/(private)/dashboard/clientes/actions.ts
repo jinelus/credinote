@@ -1,333 +1,333 @@
 'use server'
 
-import { prisma } from "@/src/db/prisma";
-import { withErrorHandling } from "@/src/utils/error-handler";
+import { prisma } from '@/src/db/prisma'
+import { withErrorHandling } from '@/src/utils/error-handler'
 
 export interface RegisterClientProps {
-    name: string;
-    cpf: string;
-    telephone?: string;
-    slug: string;
+	name: string
+	cpf: string
+	telephone?: string
+	slug: string
 }
 
 export interface EditClientUseCaseProps {
-    userId: string;
-    clientId: string;
-    name: string;
-    telephone?: string;
+	userId: string
+	clientId: string
+	name: string
+	telephone?: string
 }
 
 export interface DeleteClientUseCaseProps {
-    userId: string;
-    clientId: string;
+	userId: string
+	clientId: string
 }
 
 export interface FetchClientsParams {
-    slug: string
-    params?: {
-        page?: number
-        perPage: number
-        search?: string
-        order?: 'asc' | 'desc'
-        orderBy?: string
-    }
+	slug: string
+	params?: {
+		page?: number
+		perPage: number
+		search?: string
+		order?: 'asc' | 'desc'
+		orderBy?: string
+	}
 }
 
 export interface GetClientByCpfParams {
-    slug: string
-    cpf: string
+	slug: string
+	cpf: string
 }
 
 export type ClientResponse = {
-    amount: number;
-    name: string;
-    id: string;
-    cpf: string;
-    telephone: string;
-    createdAt: Date;
-    updatedAt: Date;
-    organizationId: string;
+	amount: number
+	name: string
+	id: string
+	cpf: string
+	telephone: string
+	createdAt: Date
+	updatedAt: Date
+	organizationId: string
 } | null
 
+export async function registerClient(client: RegisterClientProps) {
+	const { name, cpf, telephone, slug } = client
 
-export async function registerClient(client: RegisterClientProps ) {
+	const result = await withErrorHandling(async () => {
+		const organization = await prisma.organization.findUnique({
+			where: {
+				slug,
+			},
+		})
 
-    const { name, cpf, telephone, slug } = client
+		if (!organization) {
+			return {
+				success: false,
+				error: 'Não faz parte de uma organização',
+			}
+		}
 
-    const result = await withErrorHandling(async () => {
-        const organization = await prisma.organization.findUnique({
-            where: {
-                slug
-            }
-        })
-    
-        if (!organization) {
-            return {
-                success: false,
-                error: 'Não faz parte de uma organização'
-            }
-        }
+		const existing = await prisma.client.findUnique({
+			where: {
+				cpf,
+			},
+		})
 
-        const existing = await prisma.client.findUnique({
-            where: {
-                cpf,
-            }
-        })
+		if (existing) {
+			return {
+				success: false,
+				error: 'Esse cliente já foi cadastrado',
+			}
+		}
 
-        if (existing) {
-            return {
-                success: false,
-                error: 'Esse cliente já foi cadastrado'
-            }
-        }
-    
-        const createdClient = await prisma.client.create({
-            data: {
-                name,
-                cpf,
-                telephone: telephone || '',
-                organizationId: organization.id,
-                amount: 0,
-            }
-        })
-    
-        return {
-            success: true,
-            data: {
-                ...createdClient,
-                amount: Number(createdClient.amount)
-            }
-        }
-    })
-    
-    return result
+		const createdClient = await prisma.client.create({
+			data: {
+				name,
+				cpf,
+				telephone: telephone || '',
+				organizationId: organization.id,
+				amount: 0,
+			},
+		})
+
+		return {
+			success: true,
+			data: {
+				...createdClient,
+				amount: Number(createdClient.amount),
+			},
+		}
+	})
+
+	return result
 }
 
 export async function editClient(client: EditClientUseCaseProps) {
+	const { name, telephone, clientId, userId } = client
 
-    const { name, telephone, clientId, userId } = client
+	const result = await withErrorHandling(async () => {
+		const user = await prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+		})
 
-    const result = await withErrorHandling(async () => {
-        const user = await prisma.user.findUnique({
-            where: {
-                id: userId
-            }
-        })
-    
-        if(!user) {
-            return {
-                success: false,
-                error: 'User not found'
-            }
-        }
-    
-        const updatedClient = await prisma.client.update({
-            where: {
-                id: clientId
-            },
-            data: {
-                name,
-                telephone
-            }
-        })
-        
-        return {
-            success: true,
-            data: updatedClient
-        }
-    })
+		if (!user) {
+			return {
+				success: false,
+				error: 'User not found',
+			}
+		}
 
-    return result
+		const updatedClient = await prisma.client.update({
+			where: {
+				id: clientId,
+			},
+			data: {
+				name,
+				telephone,
+			},
+		})
+
+		return {
+			success: true,
+			data: updatedClient,
+		}
+	})
+
+	return result
 }
 
-export async function deleteClient({ clientId, userId }: DeleteClientUseCaseProps) {
+export async function deleteClient({
+	clientId,
+	userId,
+}: DeleteClientUseCaseProps) {
+	const result = await withErrorHandling(async () => {
+		const user = await prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+		})
 
-    const result = await withErrorHandling(async () => {
-        const user = await prisma.user.findUnique({
-            where: {
-                id: userId
-            }
-        })
-    
-        if(!user) {
-            return {
-                success: false,
-                error: 'User not found'
-            }
-        }
-    
-        await prisma.client.delete({
-            where: {
-                id: clientId
-            }
-        })
+		if (!user) {
+			return {
+				success: false,
+				error: 'User not found',
+			}
+		}
 
-        return {
-            success: true,
-            data: 'Client deleted'
-        }
-    })
+		await prisma.client.delete({
+			where: {
+				id: clientId,
+			},
+		})
 
-    return result
+		return {
+			success: true,
+			data: 'Client deleted',
+		}
+	})
+
+	return result
 }
 
 export async function fetchClients({ slug, params }: FetchClientsParams) {
+	const organization = await prisma.organization.findUnique({
+		where: {
+			slug,
+		},
+	})
 
-    const organization = await prisma.organization.findUnique({
-        where: {
-            slug
-        }
-    })
+	const result = await withErrorHandling(async () => {
+		const perPage = params?.perPage || 10
+		const page = params?.page || 1
 
-    const result = await withErrorHandling(async () => {
+		const clients = await prisma.client.findMany({
+			where: {
+				organizationId: organization?.id,
+				...(params?.search
+					? {
+							OR: [
+								{
+									name: {
+										contains: params.search,
+										mode: 'insensitive',
+									},
+								},
+								{
+									cpf: {
+										contains: params.search,
+										mode: 'insensitive',
+									},
+								},
+								{
+									telephone: {
+										contains: params.search,
+										mode: 'insensitive',
+									},
+								},
+							],
+						}
+					: {}),
+			},
+			skip: (page - 1) * perPage,
+			take: perPage,
+			orderBy: {
+				[params?.orderBy || 'createdAt']: params?.order,
+			},
+		})
 
-        const perPage = params?.perPage || 10
-        const page = params?.page || 1
-        
-        const clients = await prisma.client.findMany({
-            where: {
-                organizationId: organization?.id,
-                ...(params?.search ? {
-                    OR: [
-                        {
-                            name: {
-                                contains: params.search,
-                                mode: 'insensitive'
-                            }
-                        },
-                        {
-                            cpf: {
-                                contains: params.search,
-                                mode: 'insensitive',
-                            }
-                        },
-                        {
-                            telephone: {
-                                contains: params.search,
-                                mode: 'insensitive'
-                            }
-                        }
-                    ]
-                } : {})
-            },
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-                [params?.orderBy || 'createdAt']: params?.order
-            }
-        })
+		const clientsCount = await prisma.client.count({
+			where: {
+				organizationId: organization?.id,
+				...(params?.search
+					? {
+							OR: [
+								{
+									name: {
+										contains: params.search,
+										mode: 'insensitive',
+									},
+								},
+								{
+									cpf: {
+										contains: params.search,
+										mode: 'insensitive',
+									},
+								},
+								{
+									telephone: {
+										contains: params.search,
+										mode: 'insensitive',
+									},
+								},
+							],
+						}
+					: {}),
+			},
+		})
 
-        const clientsCount = await prisma.client.count({
-            where: {
-                organizationId: organization?.id,
-                ...(params?.search ? {
-                    OR: [
-                        {
-                            name: {
-                                contains: params.search,
-                                mode: 'insensitive'
-                            }
-                        },
-                        {
-                            cpf: {
-                                contains: params.search,
-                                mode: 'insensitive',
-                            }
-                        },
-                        {
-                            telephone: {
-                                contains: params.search,
-                                mode: 'insensitive'
-                            }
-                        }
-                    ]
-                } : {})
-            }
-        })
+		const maxPage = Math.ceil(clientsCount / (params?.perPage ?? 10))
 
-        const maxPage = Math.ceil(clientsCount / (params?.perPage ?? 10))
+		return {
+			success: true,
+			data: {
+				clients: clients.map((client) => ({
+					...client,
+					amount: Number(client.amount),
+				})),
+				total: clientsCount,
+				maxPage,
+			},
+		}
+	})
 
-        return {
-            success: true,
-            data: {
-                clients: clients.map((client) => ({
-                    ...client,
-                    amount: Number(client.amount)
-                })),
-                total: clientsCount,
-                maxPage,
-            }
-        }
-    })
-
-    return result
+	return result
 }
 
 export async function getClientByCpf({ slug, cpf }: GetClientByCpfParams) {
-    const result = await withErrorHandling(async () => {
-        const organization = await prisma.organization.findUnique({
-            where: { slug }
-        })
-    
-        if (!organization) {
-            return {
-                success: false,
-                error: 'Organization not found'
-            }
-        }
-    
-        const client = await prisma.client.findUnique({
-            where: {
-                cpf,
-                organizationId: organization.id
-            }
-        })
+	const result = await withErrorHandling(async () => {
+		const organization = await prisma.organization.findUnique({
+			where: { slug },
+		})
 
-        if (!client) {
-            return {
-                success: false,
-                error: 'Cliente não encontrado!'
-            }
-        }
-    
-        return {
-            success: true,
-            data: {
-                ...client,
-                amount: Number(client.amount)
-            }
-        }
-    })
+		if (!organization) {
+			return {
+				success: false,
+				error: 'Organization not found',
+			}
+		}
 
-    return result
+		const client = await prisma.client.findUnique({
+			where: {
+				cpf,
+				organizationId: organization.id,
+			},
+		})
+
+		if (!client) {
+			return {
+				success: false,
+				error: 'Cliente não encontrado!',
+			}
+		}
+
+		return {
+			success: true,
+			data: {
+				...client,
+				amount: Number(client.amount),
+			},
+		}
+	})
+
+	return result
 }
 
 export async function getClientById(id: string) {
+	const result = await withErrorHandling(async () => {
+		const client = await prisma.client.findUnique({
+			where: {
+				id,
+			},
+		})
 
-    const result = await withErrorHandling(async () => {
-        const client = await prisma.client.findUnique({
-            where: {
-                id
-            }
-        })
+		if (!client) {
+			return {
+				success: false,
+				error: 'Client not found',
+			}
+		}
 
-        if (!client) {
-            return {
-                success: false,
-                error: 'Client not found'
-            }
-        }
+		return {
+			success: true,
+			data: {
+				...client,
+				amount: Number(client.amount),
+			},
+		}
+	})
 
-        return {
-            success: true,
-            data: {
-                ...client,
-                amount: Number(client.amount)
-            }
-        }
-    })
-
-    return result
+	return result
 }
 
 // export async function fetchClientByName({ userId, query }: FetchClientByNameUseCaseProps) {
