@@ -7,13 +7,13 @@ import { LinkItems } from "./link-items"
 
 
 
-export const AppSidebar = ({ slug }: { slug: string }) => {
+export const AppSidebar = () => {
 
 
     const navLinks = [
         {
             label: 'Dashboard',
-            href: `/${slug}/`,
+            href: `/dashboard/`,
             icon: {
                 active: <House fill="#000" />,
                 inactive: <House />
@@ -21,7 +21,7 @@ export const AppSidebar = ({ slug }: { slug: string }) => {
         },
         {
             label: 'Clientes',
-            href: `/${slug}/clientes`,
+            href: `/dashboard/clientes`,
             icon: {
                 active: <Users fill="#000" />,
                 inactive: <Users />,
@@ -29,7 +29,7 @@ export const AppSidebar = ({ slug }: { slug: string }) => {
         },
         {
             label: 'Pedidos',
-            href: `/${slug}/pedidos`,
+            href: `/dashboard/pedidos`,
             icon: {
                 active: <ShoppingCart fill="#000" />,
                 inactive: <ShoppingCart />,
@@ -37,7 +37,7 @@ export const AppSidebar = ({ slug }: { slug: string }) => {
         },
         {
             label: 'Pagamentos',
-            href: `/${slug}/pagamentos`,
+            href: `/dashboard/pagamentos`,
             icon: {
                 active: <HandCoins fill="#000" />,
                 inactive: <HandCoins />,

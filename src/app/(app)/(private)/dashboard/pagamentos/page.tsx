@@ -1,6 +1,4 @@
 import { Container } from '@/src/components/base-components/container'
-import { getOrganizationBySlug } from '@/src/app/actions/organization'
-import { redirect } from 'next/navigation'
 import { createLoader, parseAsInteger, parseAsString, type SearchParams } from 'nuqs/server'
 import { PaymentList } from '@/src/components/payments/payment-list'
 import { fetchPayments } from './actions'
@@ -10,6 +8,7 @@ import type { PaginationParams } from '@/src/utils/types'
 import { PaginationButtons } from '@/src/components/pagination'
 import Link from 'next/link'
 import Button from '@/src/components/base-components/button'
+import { getSession } from '@/src/lib/get-session'
 
 const filterSearchParams = {
   payment: parseAsString,
@@ -24,13 +23,11 @@ const loadSearchParams = createLoader(filterSearchParams)
 
 export default async function PaymentsPage({
   searchParams,
-  params
 }: {
   searchParams: Promise<SearchParams>
-  params: Promise<{ slug: string }>
 }) {
+  const { organization } = await getSession()
   const queries = await loadSearchParams(searchParams)
-  const { slug } = await params
 
   const defaultParams: PaginationParams = {
     page: queries.page ?? 1,
@@ -38,12 +35,6 @@ export default async function PaymentsPage({
     orderBy: queries.orderBy ?? 'createdAt',
     order: queries.order as ('asc' | 'desc') ?? 'desc',
     search: queries.search ?? ''
-}
-
-  const organization = await getOrganizationBySlug(slug)
-
-  if (!organization) {
-    redirect('/signin')
   }
 
   const response = await fetchPayments({ 
@@ -64,7 +55,7 @@ export default async function PaymentsPage({
                <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">Pagamentos</h1>
                <div className='flex items-center gap-4'>
                  <OrderSelect />
-                 <Link href={`/${slug}/novo-pagamento`}>
+                 <Link href={`/dashboard/novo-pagamento`}>
                     <Button className=''>
                       Novo pagemento
                     </Button>
@@ -79,7 +70,6 @@ export default async function PaymentsPage({
           <PaymentList 
             payments={response.data.payments ?? []}
             currentPage={queries.page ?? 1}
-            slug={slug}
           />
           <PaginationButtons currentPage={queries.page ?? 1} maxPage={response.data.maxPage} />
         </div>

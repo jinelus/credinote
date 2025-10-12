@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/src/lib/auth";
 import { getUserWithOrganization } from "@/src/app/actions/organization";
+import { toast } from "sonner";
 
 const FormDataSchema = z.object({
     email: z.string().email({ message: 'E-mail inválido' }),
@@ -42,10 +43,33 @@ export default function SignInForm() {
                 setError('Você não faz parte de nenhum organização')
                 return
             }
-
-            router.push(`/${data.organization?.slug}`)
+            toast.success('Login com succeso!')
+            router.push(`/dashboard`)
         }
     }
+
+    // const onSignUp = async (data: FormData) => {
+    //     const { data: dataResponse } = await authClient.signUp.email({
+    //         email: data.email,
+    //         password: data.password,
+    //         name: 'Judelin Inélus',
+    //     }, {
+    //         onError: () => {
+    //             setError('Credenciais inválidas. Verifique seu e-mail e senha.')
+    //         },
+    //     })
+
+    //     if (dataResponse?.user) {
+    //         const data = await createOrganization({ name: 'JCB Mercado', userId: dataResponse.user.id })
+
+    //         if (!data) {
+    //             setError('Você não faz parte de nenhum organização')
+    //             return
+    //         }
+
+    //         toast.success('Conta e Organização criadas com succeso!')
+    //     }
+    // }
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md p-8 space-y-6">

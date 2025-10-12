@@ -5,13 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, useWatch } from 'react-hook-form'
 import Button from '../base-components/button'
 import Spinner from '../base-components/spinner'
-import { getClientByCpf } from '@/src/app/(app)/(private)/[slug]/clientes/actions'
 import { useState } from 'react'
-import { addOrder } from '@/src/app/(app)/(private)/[slug]/nova-compra/actions'
+import { addOrder } from '@/src/app/(app)/(private)/dashboard/nova-compra/actions'
 import { handleCpfInputFormatting } from '@/src/utils/format'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { Input } from '../ui/input'
+import { getClientByCpf } from '@/src/app/(app)/(private)/dashboard/clientes/actions'
 
 const formSchema = z.object({
   total: z.coerce.number().min(1, 'O valor é obrigatório'),
@@ -87,7 +87,7 @@ export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) 
         toast.error(result.error)
       } else {
         toast.success('Compra cadastrada com sucesso')
-        router.push(`/${slug}`)
+        router.push(`/dashboard`)
       }
     } catch (error) {
       toast.error(error as string)

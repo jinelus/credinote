@@ -1,6 +1,6 @@
 'use client'
 
-import { Payment } from '@/src/app/(app)/(private)/[slug]/pagamentos/actions'
+import { Payment } from '@/src/app/(app)/(private)/dashboard/pagamentos/actions'
 import { formatCurrency } from '@/src/lib/utils'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -9,10 +9,9 @@ import Link from 'next/link'
 type PaymentListProps = {
   payments: Payment[]
   currentPage: number
-  slug: string
 }
 
-export function PaymentList({ payments, currentPage, slug }: PaymentListProps) {
+export function PaymentList({ payments, currentPage }: PaymentListProps) {
 
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -42,7 +41,7 @@ export function PaymentList({ payments, currentPage, slug }: PaymentListProps) {
               >
                 <td className="px-6 py-4 whitespace-nowrap text-center">
                   <Link
-                    href={`/${slug}/pagamentos?payment=${payment.id}&page=${currentPage}`}
+                    href={`/dashboard/pagamentos?payment=${payment.id}&page=${currentPage}`}
                     className="text-sm text-slate-900"
                   >
                     {payment.clientName}
