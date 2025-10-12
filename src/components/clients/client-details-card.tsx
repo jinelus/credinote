@@ -13,11 +13,10 @@ interface Client {
 
 interface ClientDetailsCardProps {
   client: Client
-  slug: string
   redirectCancelLink: string
 }
 
-export function ClientDetailsCard({ client, slug, redirectCancelLink }: ClientDetailsCardProps) {
+export function ClientDetailsCard({ client, redirectCancelLink }: ClientDetailsCardProps) {
 
 
   return (
@@ -63,7 +62,7 @@ export function ClientDetailsCard({ client, slug, redirectCancelLink }: ClientDe
             </div>
 
             <div className="pt-6 flex gap-4 items-center justify-between flex-wrap w-full">
-              <Link href={`/${slug}/nova-compra?client=${client.id}`}>
+              <Link href={`/dashboard/nova-compra?client=${client.id}`}>
                 <Button
                   variant='outline'
                   className="w-full"
@@ -71,7 +70,7 @@ export function ClientDetailsCard({ client, slug, redirectCancelLink }: ClientDe
                   Nova Compra
                 </Button>
               </Link>
-              <Link href={`/${slug}/novo-pagamento?client=${client.id}`}>
+              <Link href={`/dashboard/novo-pagamento?client=${client.id}`}>
                 <Button
                   className="w-full bg-slate-800 text-white hover:bg-slate-900"
                   >

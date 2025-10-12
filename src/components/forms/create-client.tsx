@@ -6,9 +6,9 @@ import Button from '@/src/components/base-components/button'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { registerClient } from '@/src/app/(app)/(private)/[slug]/clientes/actions'
 import { handleCpfInputFormatting, handleTelephoneInput } from '@/src/utils/format'
 import { toast } from 'sonner'
+import { registerClient } from '@/src/app/(app)/(private)/dashboard/clientes/actions'
 
 const clientSchema = z.object({
   name: z.string().min(3, { message: 'O nome deve ter pelo menos 3 caracteres' }),
@@ -49,7 +49,7 @@ export default function CreateClientForm({ slug }: { slug: string }) {
       if (!result.success) {
         toast.error(result.error || 'Erro ao cadastrar cliente')
       } else {
-        router.push(`/${slug}/nova-compra?client=${result.data.id}`)
+        router.push(`/dashboard/nova-compra?client=${result.data.id}`)
       }     
     } catch (error) {
       console.error('Erro ao cadastrar cliente:', error)

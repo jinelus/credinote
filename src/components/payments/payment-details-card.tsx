@@ -1,4 +1,4 @@
-import { Payment } from '@/src/app/(app)/(private)/[slug]/pagamentos/actions'
+import { Payment } from '@/src/app/(app)/(private)/dashboard/pagamentos/actions'
 import { Card } from '@/src/components/base-components/card'
 import { formatCurrency } from '@/src/lib/utils'
 import { format } from 'date-fns'
