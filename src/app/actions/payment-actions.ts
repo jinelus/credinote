@@ -1,5 +1,3 @@
-
-
 // export async function createPayment(payment: MakePaymentUseCaseProps){
 //     const createPaymentUseCase = new MakePaymentUseCase(paymentRepository, clientRepository)
 
@@ -22,6 +20,6 @@
 //     const fetchPaymentsByClientUseCase = new FetchPaymentsByClientUseCase(paymentRepository, clientRepository)
 
 //     const result = await fetchPaymentsByClientUseCase.execute({clientId: userId, page})
-    
+
 //     return result.value
 // }
