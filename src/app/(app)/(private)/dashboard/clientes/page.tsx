@@ -3,9 +3,10 @@ import { ClientList } from '@/src/components/clients/client-list'
 import { ClientDetailsCard } from '@/src/components/clients/client-details-card'
 import Button from '@/src/components/base-components/button'
 import Link from 'next/link'
-import { fetchClients } from '@/src/app/(app)/(private)/[slug]/clientes/actions'
 import { createLoader, parseAsInteger, parseAsString, type SearchParams } from 'nuqs/server'
 import { OrderSelect } from '@/src/components/filter/order-select'
+import { fetchClients } from './actions'
+import { getSession } from '@/src/lib/get-session'
 
 const filterSearchParams = {
   client: parseAsString,
@@ -20,16 +21,14 @@ const loadSearchParams = createLoader(filterSearchParams)
 
 export default async function ClientsPage({
   searchParams,
-  params
 }: {
   searchParams: Promise<SearchParams>
-  params: Promise<{ slug: string }>
 }) {
+  const { organization } = await getSession()
   const queries = await loadSearchParams(searchParams)
-  const { slug } = await params
 
   const response = await fetchClients({ 
-    slug,
+    slug: organization.slug,
     params: {
       perPage: queries.perPage ?? 10,
       page: queries.page ?? 1,
@@ -54,7 +53,7 @@ export default async function ClientsPage({
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">Clientes</h1>
         <div className='flex items-center gap-4'>
           <OrderSelect />
-          <Link href={`/${slug}/novo-cliente`}>
+          <Link href={`/dashboard/novo-cliente`}>
             <Button
               className="bg-slate-800 text-white hover:bg-slate-900"
               size='sm'
@@ -70,7 +69,6 @@ export default async function ClientsPage({
             clients={response.data.clients ?? []}
             selectedClientId={queries.client || null}
             currentPage={queries.page ?? 1}
-            slug={slug}
             maxPage={response.data.maxPage}
             totalItems={response.data.total}
           />
@@ -80,8 +78,7 @@ export default async function ClientsPage({
           <div className="lg:w-96 w-full">
             <ClientDetailsCard
               client={selectedClient}
-              slug={slug}
-              redirectCancelLink={`/${slug}/clientes?page=${queries.page}`}
+              redirectCancelLink={`/dashboard/clientes?page=${queries.page}`}
             />
           </div>
         )}

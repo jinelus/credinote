@@ -7,14 +7,13 @@ import Button from "@/src/components/base-components/button"
 import { Input } from "@/src/components/base-components/input"
 import { Label } from "@/src/components/base-components/label"
 import { Card } from "@/src/components/base-components/card"
-import { createPayment } from "@/src/app/(app)/(private)/[slug]/pagamentos/actions"
+import { createPayment } from "@/src/app/(app)/(private)/dashboard/pagamentos/actions"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { getClientByCpf } from "@/src/app/(app)/(private)/[slug]/clientes/actions"
-import { ClientResponse } from "@/src/app/(app)/(private)/[slug]/clientes/actions"
 import { PaymentMethod } from "@prisma/client"
 import { handleCpfInputFormatting } from "@/src/utils/format"
 import { toast } from "sonner"
+import { ClientResponse, getClientByCpf } from "@/src/app/(app)/(private)/dashboard/clientes/actions"
 
 const paymentSchema = z.object({
   clientId: z.string().min(1, "Cliente é obrigatório"),
@@ -28,8 +27,8 @@ const paymentSchema = z.object({
 type PaymentFormValues = z.infer<typeof paymentSchema>
 
 interface CreatePaymentFormProps {
-  slug: string
   client?: ClientResponse
+  slug: string
 }
 
 const paymentMethods = [
@@ -53,7 +52,7 @@ const paymentMethods = [
   }
 ]
 
-export default function CreatePaymentForm({ slug, client }: CreatePaymentFormProps) {
+export default function CreatePaymentForm({ client, slug }: CreatePaymentFormProps) {
   const router = useRouter()
   
   const [isSearching, setIsSearching] = useState(false)
@@ -90,7 +89,7 @@ export default function CreatePaymentForm({ slug, client }: CreatePaymentFormPro
   
       if (result.success) {
         toast.success('Pagamento cadastrado com successo')
-        router.push(`/${slug}/pagamentos`)
+        router.push(`/dashboard/pagamentos`)
       } else {
         toast.error(result.error)
       }
@@ -221,7 +220,7 @@ export default function CreatePaymentForm({ slug, client }: CreatePaymentFormPro
           <Button
             type="button"
             variant="ghost"
-            onClick={() => router.push(`/${slug}/pagamentos`)}
+            onClick={() => router.push(`/dashboard/pagamentos`)}
           >
             Annuler
           </Button>

@@ -1,9 +1,8 @@
-import { getClientById } from '@/src/app/(app)/(private)/[slug]/clientes/actions'
-import { getOrganizationBySlug } from '@/src/app/actions/organization'
 import { Container } from '@/src/components/base-components/container'
 import CreateOrderForm from '@/src/components/forms/create-order'
-import { redirect } from 'next/navigation'
 import { createLoader, parseAsString, type SearchParams } from 'nuqs/server'
+import { getClientById } from '../clientes/actions'
+import { getSession } from '@/src/lib/get-session'
 
 const clientIdSearchParams = {
   client: parseAsString,
@@ -11,20 +10,14 @@ const clientIdSearchParams = {
 
 const loadSearchParams = createLoader(clientIdSearchParams)
 
-export default async function CreateOrderPage({ params, searchParams }: { 
-  params: Promise<{ slug: string }>, 
+export default async function CreateOrderPage({ searchParams }: { 
   searchParams: Promise<SearchParams> 
 }) {
 
+  const { organization } = await getSession()
+
   const { client } = await loadSearchParams(searchParams)
 
-  const { slug } = await params
-
-  const organization = await getOrganizationBySlug(slug)
-
-  if (!organization) {
-    redirect('/signin')
-  }
 
   let clientFetched = null
 
@@ -38,7 +31,7 @@ export default async function CreateOrderPage({ params, searchParams }: {
 
   return (
     <Container className="min-h-screen">
-      <CreateOrderForm slug={slug} client={clientFetched} />
+      <CreateOrderForm slug={organization.slug} client={clientFetched} />
     </Container>
   )
 }

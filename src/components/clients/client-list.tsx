@@ -18,7 +18,6 @@ interface ClientListProps {
   clients: Client[]
   selectedClientId: string | null
   currentPage: number
-  slug: string
   totalItems: number
   maxPage: number
 }
@@ -27,7 +26,6 @@ export function ClientList({
   clients, 
   selectedClientId, 
   currentPage, 
-  slug,
   maxPage,
 }: ClientListProps) {
   const router = useRouter()
@@ -36,7 +34,7 @@ export function ClientList({
     const params = new URLSearchParams()
     params.set('client', clientId)
     params.set('page', currentPage.toString())
-    router.push(`/${slug}/clientes?${params.toString()}`)
+    router.push(`/dashboard/clientes?${params.toString()}`)
   }
 
   return (

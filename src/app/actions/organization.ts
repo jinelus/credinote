@@ -67,7 +67,9 @@ export async function getUserWithOrganization(email: string) {
             include: {
                 organization: {
                     select: {
-                        slug: true
+                        id: true,
+                        slug: true,
+                        name: true,
                     }
                 }
             }

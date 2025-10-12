@@ -8,6 +8,7 @@ import { getClient, getOrders } from './action'
 import { ClientDetailsCard } from '@/src/components/clients/client-details-card'
 import { OrderList } from '@/src/components/orders/order-list'
 import { createLoader, parseAsString, type SearchParams } from 'nuqs/server'
+import { getSession } from '@/src/lib/get-session'
 
 const filterSearchParams = {
   client: parseAsString
@@ -16,14 +17,13 @@ const filterSearchParams = {
 const loadSearchParams = createLoader(filterSearchParams)
 
 export default async function DashboardPage({ 
-  params, 
   searchParams 
 }: { 
-  params: Promise<{ slug: string }>
   searchParams: Promise<SearchParams>
 }) {
 
-  const { slug } = await params
+  const { organization } = await getSession()
+
   const { client } = await loadSearchParams(searchParams)
 
   const quickActions = [
@@ -31,33 +31,33 @@ export default async function DashboardPage({
       title: 'Novo Cliente',
       description: 'Cadastre um novo cliente',
       icon: <Plus className="w-6 h-6" />,
-      href: `/${slug}/novo-cliente`,
+      href: `/dashboard/novo-cliente`,
       color: 'bg-blue-500'
     },
     {
       title: 'Lista de Clientes',
       description: 'Visualize todos os clientes',
       icon: <Users className="w-6 h-6" />,
-      href: `/${slug}/clientes`,
+      href: `/dashboard/clientes`,
       color: 'bg-green-500'
     },
     {
       title: 'Nova Compra',
       description: 'Cadastre um nova compra',
       icon: <Package className="w-6 h-6" />,
-      href: `/${slug}/nova-compra`,
+      href: `/dashboard/nova-compra`,
       color: 'bg-purple-500'
     },
     {
       title: 'Novo Pagamento',
       description: 'Registre novo pagamento',
       icon: <HandCoins className="w-6 h-6" />,
-      href: `/${slug}/novo-pagamento`,
+      href: `/dashboard/novo-pagamento`,
       color: 'bg-orange-500'
     }
   ]
 
-  const recentOrders = await getOrders(slug, { perPage: 5 })
+  const recentOrders = await getOrders(organization.slug, { perPage: 5 })
 
   if (!recentOrders.success || !recentOrders.data) {
     return
@@ -92,7 +92,7 @@ export default async function DashboardPage({
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-slate-800">Pedidos Recentes</h2>
               <div className="flex items-center gap-4">
-                <Link href={`/${slug}/pedidos`} className="text-slate-600 hover:text-slate-900">
+                <Link href={`/${organization.slug}/pedidos`} className="text-slate-600 hover:text-slate-900">
                   <Button
                     variant="ghost"
                     size='sm'
@@ -142,8 +142,7 @@ export default async function DashboardPage({
           <div className="lg:w-96 w-full">
             <ClientDetailsCard
               client={selectedClient.data}
-              slug={slug}
-              redirectCancelLink={`/${slug}`}
+              redirectCancelLink={`/dashboard`}
             />
           </div>
         )}

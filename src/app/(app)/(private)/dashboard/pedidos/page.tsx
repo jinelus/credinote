@@ -1,6 +1,6 @@
 import { OrderList } from "@/src/components/orders/order-list";
 import { createLoader, parseAsInteger, parseAsString, type SearchParams } from "nuqs/server";
-import { getClient, getOrders } from "../action";
+
 import type { PaginationParams } from "@/src/utils/types";
 import { ClientDetailsCard } from "@/src/components/clients/client-details-card";
 import { Container } from "@/src/components/base-components/container";
@@ -9,6 +9,8 @@ import { SearchFilter } from "@/src/components/filter/search";
 import { PaginationButtons } from "@/src/components/pagination";
 import Link from "next/link";
 import Button from "@/src/components/base-components/button";
+import { getSession } from "@/src/lib/get-session";
+import { getClient, getOrders } from "../action";
 
 const filterSearchParams = {
     client: parseAsString,
@@ -22,14 +24,12 @@ const filterSearchParams = {
 const loadSearchParams = createLoader(filterSearchParams)
 
 export default async function OrdersPage({
-    params,
     searchParams
 }: {
-    params: Promise<{ slug: string }>
     searchParams: Promise<SearchParams>
 }) {
 
-    const { slug } = await params
+    const { organization } = await getSession()
     const queries = await loadSearchParams(searchParams)
 
     const defaultParams: PaginationParams = {
@@ -40,7 +40,7 @@ export default async function OrdersPage({
         search: queries.search ?? ''
     }
 
-    const response = await getOrders(slug, defaultParams)
+    const response = await getOrders(organization.slug, defaultParams)
 
     if (!response.success || !response.data) {
         return
@@ -56,7 +56,7 @@ export default async function OrdersPage({
                 <h2 className="text-xl font-semibold text-slate-800">Todos Pedidos</h2>
                 <div className='flex items-center gap-4'>
                   <OrderSelect />
-                  <Link href={`/${slug}/nova-compra`}>
+                  <Link href={`/dashboard/nova-compra`}>
                     <Button>
                       Nova compra
                     </Button>
@@ -105,8 +105,7 @@ export default async function OrdersPage({
           <div className="lg:w-96 w-full">
             <ClientDetailsCard
               client={selectedClient.data}
-              slug={slug}
-              redirectCancelLink={`/${slug}/pedidos`}
+              redirectCancelLink={`/dashboard/pedidos`}
             />
           </div>
         )}
