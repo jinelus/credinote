@@ -55,7 +55,7 @@
 		"zod": "^3.24.1"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.5",
+		"@biomejs/biome": "2.2.6",
 		"@eslint/eslintrc": "^3",
 		"@types/bcryptjs": "^2.4.6",
 		"@types/node": "^20",

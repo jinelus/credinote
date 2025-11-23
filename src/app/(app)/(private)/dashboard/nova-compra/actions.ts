@@ -1,5 +1,6 @@
 'use server'
 
+import dayjs from 'dayjs'
 import { prisma } from '@/src/db/prisma'
 import { withErrorHandling } from '@/src/utils/error-handler'
 
@@ -35,6 +36,26 @@ export async function addOrder({ slug, clientId, total }: AddOrderParams) {
 			return {
 				success: false,
 				error: 'Cliente não encontrado',
+			}
+		}
+
+		const mustRecentPayment = await prisma.payment.findFirst({
+			where: {
+				clientId: client.id,
+			},
+			orderBy: {
+				paidAt: 'desc',
+			},
+		})
+
+		const isBeen3Months =
+			dayjs(Date.now()).diff(mustRecentPayment?.paidAt, 'month') >= 3
+
+		if (Number(client.amount) > 99.99 && isBeen3Months) {
+			return {
+				success: false,
+				error:
+					'Esse cliente precisa pagar o que deve desde mais de 3 meses antes de poder comprar de novo',
 			}
 		}
 
