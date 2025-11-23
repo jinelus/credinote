@@ -1,16 +1,21 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  serverExternalPackages: ['pdfkit'],
+  webpack: (config) => {
+    config.resolve.alias.canvas = false
+    config.resolve.alias.encoding = false
+    return config
+  },
   async redirects() {
     return [
       {
         source: '/',
         destination: '/dashboard',
         permanent: false,
-      }
+      },
     ]
-  }
-};
+  },
+}
 
-export default nextConfig;
+export default nextConfig
