@@ -12,11 +12,13 @@ import { handleCpfInputFormatting } from '@/src/utils/format'
 import Button from '../base-components/button'
 import Spinner from '../base-components/spinner'
 import { Input } from '../ui/input'
+import { Textarea } from '../ui/textarea'
 
 const formSchema = z.object({
 	total: z.coerce.number().min(1, 'O valor é obrigatório'),
 	clientId: z.string().min(1, 'O cliente é obrigatório'),
 	clientName: z.string(),
+	description: z.string().optional(),
 	clientCpf: z.string().min(14, 'CPF inválido'),
 })
 
@@ -35,10 +37,7 @@ interface CreateOrderFormProps {
 	client: Client | null
 }
 
-export default function CreateOrderForm({
-	slug,
-	client,
-}: CreateOrderFormProps) {
+export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) {
 	const [isLoading, setIsLoading] = useState<boolean>(false)
 	const router = useRouter()
 	const form = useForm<FormValues>({
@@ -84,6 +83,7 @@ export default function CreateOrderForm({
 				clientId: values.clientId,
 				slug,
 				total: Number(values.total),
+				description: values.description,
 			})
 			if (!result.success) {
 				toast.error(result.error)
@@ -125,18 +125,13 @@ export default function CreateOrderForm({
 								className="disabled:border-gray-200 disabled:bg-gray-200 disabled:text-gray-800"
 							/>
 							{isLoading && (
-								<Button
-									type="button"
-									className="flex w-10 items-center justify-center"
-								>
+								<Button type="button" className="flex w-10 items-center justify-center">
 									<Spinner />
 								</Button>
 							)}
 						</div>
 						{form.formState.errors.clientCpf && (
-							<p className="text-red-500 text-sm">
-								{form.formState.errors.clientCpf.message}
-							</p>
+							<p className="text-red-500 text-sm">{form.formState.errors.clientCpf.message}</p>
 						)}
 					</div>
 				</div>
@@ -159,11 +154,18 @@ export default function CreateOrderForm({
 						<label htmlFor="total" className="font-medium text-sm">
 							Valor
 						</label>
-						<Input
-							id="total"
-							type="number"
-							step="0.01"
-							{...form.register('total')}
+						<Input id="total" type="number" step="0.01" {...form.register('total')} />
+					</div>
+				</div>
+				<div className="grid w-full">
+					<div className="flex flex-col gap-2">
+						<label htmlFor="description" className="font-medium text-sm">
+							Descrição
+						</label>
+						<Textarea
+							id="description"
+							{...form.register('description')}
+							className='h-24 resize-none'
 						/>
 					</div>
 				</div>
@@ -182,9 +184,7 @@ export default function CreateOrderForm({
 						disabled={form.formState.isSubmitting || total <= 0}
 						className="disabled:text-gray-400"
 					>
-						{form.formState.isSubmitting
-							? 'Cadastrando...'
-							: 'Cadastrar compra'}
+						{form.formState.isSubmitting ? 'Cadastrando...' : 'Cadastrar compra'}
 					</Button>
 				</div>
 			</form>

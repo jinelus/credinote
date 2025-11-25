@@ -54,9 +54,10 @@ model Client {
 }
 
 model Order {
-  id    String   @id @default(uuid())
-  date  DateTime @default(now())
-  total Decimal  @db.Decimal(10, 2)
+  id          String   @id @default(uuid())
+  date        DateTime @default(now())
+  total       Decimal  @db.Decimal(10, 2)
+  description String?
 
   clientId String @map("id_client")
 
