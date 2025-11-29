@@ -1,13 +1,13 @@
-import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createLoader, parseAsInteger, type SearchParams } from 'nuqs/server'
-import Button from '@/src/components/base-components/button'
+import { GoBackBtn } from '@/src/components/back-btn'
 import { Card } from '@/src/components/base-components/card'
 import { Container } from '@/src/components/base-components/container'
 import ClientTimeline from '@/src/components/client-timeline'
 import { EditUser } from '@/src/components/dialog/edit-client'
 import { PaginationButtons } from '@/src/components/pagination'
+import { Button } from '@/src/components/ui/button'
 import { getSession } from '@/src/lib/get-session'
 import { formatCurrency } from '@/src/lib/utils'
 import { getClientDetails } from '../actions'
@@ -54,12 +54,7 @@ export default async function ClientDashboardPage({
   return (
     <Container className="py-8">
       <div className="space-y-8">
-        <Link href="/dashboard/clientes">
-          <Button variant="link" className="flex w-auto items-center border-none px-2">
-            <ChevronLeft />
-            Voltar para clientes
-          </Button>
-        </Link>
+        <GoBackBtn />
         <div className="flex items-center justify-between">
           <div>
             <h1 className="mt-2 font-bold text-3xl text-slate-800">{client.name}</h1>
@@ -100,23 +95,37 @@ export default async function ClientDashboardPage({
             {maxPage > 1 && <PaginationButtons currentPage={page} maxPage={maxPage} />}
           </div>
 
-          <Card className="sticky top-4 w-full space-y-4 p-6 lg:w-auto">
-            <h2 className="font-semibold text-slate-800 text-xl">Informações do cliente</h2>
-            <div className="space-y-3 text-slate-600 text-sm">
-              <p>
-                <span className="font-medium text-slate-500">Telefone: </span>
-                {client.telephone || 'Não informado'}
-              </p>
-              <p>
-                <span className="font-medium text-slate-500">Criado em: </span>
-                {client.createdAt.toLocaleDateString('pt-BR')}
-              </p>
-              <p>
-                <span className="font-medium text-slate-500">Última atualização: </span>
-                {client.updatedAt.toLocaleDateString('pt-BR')}
-              </p>
+          <div className="sticky top-0 w-full space-y-4 lg:w-auto">
+            <div className='flex w-full flex-col gap-4'>
+              <Link href={`/dashboard/nova-compra?client=${client.id}`}>
+                <Button variant="outline" className="w-full">
+                  Nova Compra
+                </Button>
+              </Link>
+              <Link href={`/dashboard/novo-pagamento?client=${client.id}`}>
+                <Button className="w-full bg-green-600 text-white hover:bg-green-700">
+                  Novo Pagamento
+                </Button>
+              </Link>
             </div>
-          </Card>
+            <Card className="w-full space-y-4 p-6 lg:w-auto">
+              <h2 className="font-semibold text-slate-800 text-xl">Informações do cliente</h2>
+              <div className="space-y-3 text-slate-600 text-sm">
+                <p>
+                  <span className="font-medium text-slate-500">Telefone: </span>
+                  {client.telephone || 'Não informado'}
+                </p>
+                <p>
+                  <span className="font-medium text-slate-500">Criado em: </span>
+                  {client.createdAt.toLocaleDateString('pt-BR')}
+                </p>
+                <p>
+                  <span className="font-medium text-slate-500">Última atualização: </span>
+                  {client.updatedAt.toLocaleDateString('pt-BR')}
+                </p>
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
     </Container>

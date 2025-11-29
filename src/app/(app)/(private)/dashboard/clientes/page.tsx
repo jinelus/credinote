@@ -62,15 +62,6 @@ export default async function ClientsPage({
             totalItems={response.data.total}
           />
         </div>
-
-        {/* {selectedClient && (
-					<div className="w-full lg:w-96">
-						<ClientDetailsCard
-							client={selectedClient}
-							redirectCancelLink={`/dashboard/clientes?page=${queries.page}`}
-						/>
-					</div>
-				)} */}
       </div>
     </Container>
   )

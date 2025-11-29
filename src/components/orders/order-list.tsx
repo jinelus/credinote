@@ -1,6 +1,6 @@
 'use client'
 
-import { useQueryState } from 'nuqs'
+import { useRouter } from 'next/navigation'
 
 interface Order {
 	total: number
@@ -16,18 +16,13 @@ interface OrderListParams {
 }
 
 export const OrderList = ({ index, order }: OrderListParams) => {
-	const [, setClient] = useQueryState('client', {
-		shallow: false,
-	})
+	const router = useRouter()
 
-	const handleSelectedClient = () => {
-		setClient(order.clientId.toString())
-	}
 
 	return (
 		<tr
 			className={`cursor-pointer hover:bg-slate-100 ${index % 2 !== 0 ? 'bg-slate-50' : 'bg-white'}`}
-			onClick={handleSelectedClient}
+			onClick={() => router.push(`/dashboard/clientes/${order.clientId}`)}
 		>
 			<td className="whitespace-nowrap px-6 py-4">
 				<div className="font-medium text-slate-900 text-sm">

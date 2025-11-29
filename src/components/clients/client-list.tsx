@@ -56,11 +56,11 @@ export function ClientList({ clients, currentPage, maxPage }: ClientListProps) {
                   </td>
                 </tr>
               ) : (
-                clients.map((client) => (
+                clients.map((client, index) => (
                   <tr
                     key={client.id}
                     onClick={() => handleClientSelect(client.id)}
-                    className={`cursor-pointer hover:bg-slate-50`}
+                    className={`cursor-pointer hover:bg-slate-50 ${index % 2 !== 0 ? 'bg-slate-50' : 'bg-white'}`}
                   >
                     <td className="whitespace-nowrap px-6 py-4">
                       <div className="flex w-full items-center px-2">

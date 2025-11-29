@@ -2,16 +2,16 @@
 
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import type { Payment } from '@/src/app/(app)/(private)/dashboard/pagamentos/actions'
 import { formatCurrency } from '@/src/lib/utils'
 
 type PaymentListProps = {
 	payments: Payment[]
-	currentPage: number
 }
 
-export function PaymentList({ payments, currentPage }: PaymentListProps) {
+export function PaymentList({ payments }: PaymentListProps) {
+	const router = useRouter()
 	return (
 		<div className="overflow-hidden rounded-lg bg-white shadow">
 			<div className="overflow-x-auto">
@@ -33,28 +33,24 @@ export function PaymentList({ payments, currentPage }: PaymentListProps) {
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-slate-200">
-						{payments.map((payment) => (
-							<tr key={payment.id} className={`hover:bg-slate-50`}>
-								<td className="whitespace-nowrap px-6 py-4 text-center">
-									<Link
-										href={`/dashboard/pagamentos?payment=${payment.id}&page=${currentPage}`}
-										className="text-slate-900 text-sm"
-									>
-										{payment.clientName}
-									</Link>
-								</td>
+						{payments.map((payment, index) => (
+							<tr
+								key={payment.id}
+								className={`hover:bg-slate-50 ${index % 2 !== 0 ? 'bg-slate-50' : 'bg-white'}`}
+								onClick={() => router.push(`/dashboard/clientes/${payment.clientId}`)}
+							>
+								<td className="whitespace-nowrap px-6 py-4 text-center">{payment.clientName}</td>
 								<td className="whitespace-nowrap px-6 py-4 text-center text-slate-900 text-sm">
 									{formatCurrency(payment.amount)}
 								</td>
 								<td className="whitespace-nowrap px-6 py-4 text-center">
 									<span
-										className={`inline-flex rounded-full px-2 font-semibold text-xs leading-5 ${
-											payment.method === 'CASH'
+										className={`inline-flex rounded-full px-2 font-semibold text-xs leading-5 ${payment.method === 'CASH'
 												? 'bg-green-100 text-green-800'
 												: payment.method === 'CARD'
 													? 'bg-blue-100 text-blue-800'
 													: 'bg-purple-100 text-purple-800'
-										}`}
+											}`}
 									>
 										{payment.method === 'CASH'
 											? 'Dinheiro'

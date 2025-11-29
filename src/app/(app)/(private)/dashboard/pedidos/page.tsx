@@ -7,17 +7,15 @@ import {
 } from 'nuqs/server'
 import Button from '@/src/components/base-components/button'
 import { Container } from '@/src/components/base-components/container'
-import { ClientDetailsCard } from '@/src/components/clients/client-details-card'
 import { OrderSelect } from '@/src/components/filter/order-select'
 import { SearchFilter } from '@/src/components/filter/search'
 import { OrderList } from '@/src/components/orders/order-list'
 import { PaginationButtons } from '@/src/components/pagination'
 import { getSession } from '@/src/lib/get-session'
 import type { PaginationParams } from '@/src/utils/types'
-import { getClient, getOrders } from '../action'
+import { getOrders } from '../action'
 
 const filterSearchParams = {
-	client: parseAsString,
 	perPage: parseAsInteger,
 	page: parseAsInteger,
 	orderBy: parseAsString,
@@ -48,8 +46,6 @@ export default async function OrdersPage({
 	if (!response.success || !response.data) {
 		return
 	}
-
-	const selectedClient = queries.client ? await getClient(queries.client) : null
 
 	return (
 		<Container className="flex flex-col gap-8 lg:flex-row">
@@ -107,15 +103,6 @@ export default async function OrdersPage({
 					/>
 				</div>
 			</div>
-
-			{selectedClient?.success && selectedClient.data && (
-				<div className="w-full lg:w-96">
-					<ClientDetailsCard
-						client={selectedClient.data}
-						redirectCancelLink={`/dashboard/pedidos`}
-					/>
-				</div>
-			)}
 		</Container>
 	)
 }
