@@ -165,7 +165,7 @@ export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) 
 						<Textarea
 							id="description"
 							{...form.register('description')}
-							className='h-24 resize-none'
+							className='h-24 resize-none w-full'
 						/>
 					</div>
 				</div>
