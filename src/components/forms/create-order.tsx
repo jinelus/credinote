@@ -9,6 +9,7 @@ import { z } from 'zod'
 import { getClientByCpf } from '@/src/app/(app)/(private)/dashboard/clientes/actions'
 import { addOrder } from '@/src/app/(app)/(private)/dashboard/nova-compra/actions'
 import { handleCpfInputFormatting } from '@/src/utils/format'
+import { GoBackBtn } from '../back-btn'
 import Button from '../base-components/button'
 import Spinner from '../base-components/spinner'
 import { Input } from '../ui/input'
@@ -99,7 +100,10 @@ export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) 
 
 	return (
 		<div className="mx-auto max-w-4xl">
-			<h1 className="mb-8 font-bold text-3xl text-slate-800">Nova Compra</h1>
+			<div>
+				<GoBackBtn />
+				<h1 className="mb-8 font-bold text-3xl text-slate-800">Nova Compra</h1>
+			</div>
 
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-14">
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -165,7 +169,7 @@ export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) 
 						<Textarea
 							id="description"
 							{...form.register('description')}
-							className='h-24 resize-none w-full'
+							className="h-32 w-full resize-none focus:border-border focus:outline-none focus:ring-0"
 						/>
 					</div>
 				</div>

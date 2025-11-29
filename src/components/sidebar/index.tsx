@@ -1,72 +1,76 @@
 'use client'
 
 import { HandCoins, House, ShoppingCart, Users } from 'lucide-react'
-import { SidebarCustomTrigger } from '../navbar/sidebar-trigger'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import {
 	Sidebar,
-	SidebarGroup,
+	SidebarContent,
+	SidebarHeader,
 	SidebarMenu,
+	SidebarMenuButton,
 	SidebarMenuItem,
 } from '../ui/sidebar'
-import { LinkItems } from './link-items'
+
+const navLinks = [
+	{
+		label: 'Dashboard',
+		href: `/dashboard`,
+		icon: <House />,
+	},
+	{
+		label: 'Clientes',
+		href: `/dashboard/clientes`,
+		icon: <Users />,
+	},
+	{
+		label: 'Pedidos',
+		href: `/dashboard/pedidos`,
+		icon: <ShoppingCart />,
+	},
+	{
+		label: 'Pagamentos',
+		href: `/dashboard/pagamentos`,
+		icon: <HandCoins />,
+	},
+]
 
 export const AppSidebar = () => {
-	const navLinks = [
-		{
-			label: 'Dashboard',
-			href: `/dashboard/`,
-			icon: {
-				active: <House fill="#000" />,
-				inactive: <House />,
-			},
-		},
-		{
-			label: 'Clientes',
-			href: `/dashboard/clientes`,
-			icon: {
-				active: <Users fill="#000" />,
-				inactive: <Users />,
-			},
-		},
-		{
-			label: 'Pedidos',
-			href: `/dashboard/pedidos`,
-			icon: {
-				active: <ShoppingCart fill="#000" />,
-				inactive: <ShoppingCart />,
-			},
-		},
-		{
-			label: 'Pagamentos',
-			href: `/dashboard/pagamentos`,
-			icon: {
-				active: <HandCoins fill="#000" />,
-				inactive: <HandCoins />,
-			},
-		},
-	]
+	const pathname = usePathname()
 
 	return (
-		<Sidebar
-			collapsible="icon"
-			variant="inset"
-			className="top-24 flex-1 bg-sidebar"
-		>
-			<div className="flex justify-start p-4 md:hidden">
-				<SidebarCustomTrigger />
-			</div>
+		<Sidebar collapsible="icon">
+			<SidebarHeader>
+				<SidebarMenuItem>
+					<SidebarMenuButton asChild className='mt-5 h-10 gap-x-4 px-4'>
+						<Link href="/dashboard">
+							<span className="font-bold text-2xl">JCB Mercado</span>
+						</Link>
+					</SidebarMenuButton>
+				</SidebarMenuItem>
+			</SidebarHeader>
 
-			<SidebarGroup className="top-12 w-full md:top-0">
-				<SidebarMenu className="flex flex-col gap-3">
+			<SidebarContent className="mt-14 px-2">
+				<SidebarMenu>
 					{navLinks.map((item) => {
 						return (
-							<SidebarMenuItem className="" key={item.label + item.href}>
-								<LinkItems item={item} />
+							<SidebarMenuItem key={item.label + item.href}>
+								<SidebarMenuButton
+									className="h-10 items-center gap-x-4 px-4"
+									asChild
+									tooltip={item.label}
+									isActive={pathname === item.href}
+								>
+									<Link href={item.href}>
+										{item.icon}
+										<span className="">{item.label}</span>
+									</Link>
+								</SidebarMenuButton>
 							</SidebarMenuItem>
 						)
 					})}
 				</SidebarMenu>
-			</SidebarGroup>
+			</SidebarContent>
 		</Sidebar>
 	)
 }

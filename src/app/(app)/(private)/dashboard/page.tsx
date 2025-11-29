@@ -1,29 +1,15 @@
 import { HandCoins, Package, Plus, Users } from 'lucide-react'
 import Link from 'next/link'
-import { createLoader, parseAsString, type SearchParams } from 'nuqs/server'
 import Button from '@/src/components/base-components/button'
 import { Card } from '@/src/components/base-components/card'
 import { Container } from '@/src/components/base-components/container'
-import { ClientDetailsCard } from '@/src/components/clients/client-details-card'
 import { OrderList } from '@/src/components/orders/order-list'
 
 import { getSession } from '@/src/lib/get-session'
-import { getClient, getOrders } from './action'
+import { getOrders } from './action'
 
-const filterSearchParams = {
-  client: parseAsString,
-}
-
-const loadSearchParams = createLoader(filterSearchParams)
-
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>
-}) {
+export default async function DashboardPage() {
   const { organization } = await getSession()
-
-  const { client } = await loadSearchParams(searchParams)
 
   const quickActions = [
     {
@@ -62,8 +48,6 @@ export default async function DashboardPage({
     return
   }
 
-  const selectedClient = client ? await getClient(client) : null
-
   return (
     <Container>
       <div className="space-y-8 pb-8">
@@ -74,11 +58,13 @@ export default async function DashboardPage({
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {quickActions.map((action) => (
-            <Card key={action.title} className="p-6 transition-shadow hover:shadow-lg">
-              <Link href={action.href} className="flex flex-col items-start justify-between">
+            <Card key={action.title} className='p-4 transition-shadow hover:shadow-lg'>
+              <Link href={action.href} className="flex items-center justify-center gap-4">
                 <div className={`rounded-lg p-3 ${action.color} text-white`}>{action.icon}</div>
-                <h3 className="mt-4 font-semibold text-lg text-slate-800">{action.title}</h3>
-                <p className="mt-1 text-slate-600 text-sm">{action.description}</p>
+                <div className="flex flex-col">
+                  <h3 className="font-semibold text-lg text-slate-800">{action.title}</h3>
+                  <p className="mt-1 text-muted-foreground text-sm">{action.description}</p>
+                </div>
               </Link>
             </Card>
           ))}
@@ -89,10 +75,7 @@ export default async function DashboardPage({
             <div className="mb-6 flex items-center justify-between">
               <h2 className="font-semibold text-slate-800 text-xl">Pedidos Recentes</h2>
               <div className="flex items-center gap-4">
-                <Link
-                  href={`/${organization.slug}/pedidos`}
-                  className="text-slate-600 hover:text-slate-900"
-                >
+                <Link href={`/dashboard/pedidos`} className="text-slate-600 hover:text-slate-900">
                   <Button variant="ghost" size="sm" className="text-slate-600 hover:text-white">
                     Ver todos
                   </Button>
@@ -134,12 +117,6 @@ export default async function DashboardPage({
               </div>
             </div>
           </div>
-
-          {selectedClient?.success && selectedClient.data && (
-            <div className="w-full lg:w-96">
-              <ClientDetailsCard client={selectedClient.data} redirectCancelLink={`/dashboard`} />
-            </div>
-          )}
         </div>
       </div>
     </Container>
