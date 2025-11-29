@@ -4,10 +4,10 @@ import { SidebarInset, SidebarProvider } from '../../../../components/ui/sidebar
 
 export default async function PrivateRootLayout({ children }: { children: React.ReactNode }) {
 	return (
-		<main>
-			<SidebarProvider>
+		<main className="overflow-hidden">
+			<SidebarProvider className='h-screen max-h-screen overflow-hidden'>
 				<AppSidebar />
-				<SidebarInset>
+				<SidebarInset className="overflow-y-auto">
 					<Navbar />
 					<div className="w-full">{children}</div>
 				</SidebarInset>
