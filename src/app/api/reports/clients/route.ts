@@ -77,9 +77,9 @@ export async function GET(_request: NextRequest) {
     doc.fontSize(12).font('Helvetica-Bold')
 
     const tableHeaders = {
-      name: { x: 50, width: 200, label: 'Cliente' },
-      amount: { x: 260, width: 100, label: 'Valor Pendente' },
-      updatedAt: { x: 370, width: 150, label: 'Última Atualização' },
+      name: { x: 55, width: 200, label: 'Cliente' },
+      amount: { x: 265, width: 100, label: 'Valor Pendente' },
+      updatedAt: { x: 375, width: 150, label: 'Última Atualização' },
     }
 
     // Draw table header background
@@ -89,9 +89,9 @@ export async function GET(_request: NextRequest) {
       .fillColor('#000000')
 
     // Draw table headers
-    doc.text(tableHeaders.name.label, tableHeaders.name.x, yPosition)
-    doc.text(tableHeaders.amount.label, tableHeaders.amount.x, yPosition)
-    doc.text(tableHeaders.updatedAt.label, tableHeaders.updatedAt.x, yPosition)
+    doc.text(tableHeaders.name.label, tableHeaders.name.x, yPosition + 2.5)
+    doc.text(tableHeaders.amount.label, tableHeaders.amount.x, yPosition + 2.5)
+    doc.text(tableHeaders.updatedAt.label, tableHeaders.updatedAt.x, yPosition + 2.5)
 
     yPosition += 30
 
@@ -112,9 +112,9 @@ export async function GET(_request: NextRequest) {
           .fill('#f3f4f6')
           .fillColor('#000000')
 
-        doc.text(tableHeaders.name.label, tableHeaders.name.x, yPosition)
-        doc.text(tableHeaders.amount.label, tableHeaders.amount.x, yPosition)
-        doc.text(tableHeaders.updatedAt.label, tableHeaders.updatedAt.x, yPosition)
+        doc.text(tableHeaders.name.label, tableHeaders.name.x, yPosition + 2.5)
+        doc.text(tableHeaders.amount.label, tableHeaders.amount.x, yPosition + 2.5)
+        doc.text(tableHeaders.updatedAt.label, tableHeaders.updatedAt.x, yPosition + 2.5)
 
         yPosition += 30
         doc.fontSize(10).font('Helvetica')
@@ -122,7 +122,7 @@ export async function GET(_request: NextRequest) {
 
       // Draw row background (alternating)
       const rowIndex = clients.indexOf(client)
-      if (rowIndex % 2 === 0) {
+      if (rowIndex % 2 !== 0) {
         doc
           .rect(50, yPosition - 5, doc.page.width - 100, 20)
           .fill('#fafafa')
@@ -130,19 +130,19 @@ export async function GET(_request: NextRequest) {
       }
 
       // Client name
-      doc.text(client.name, tableHeaders.name.x, yPosition, {
+      doc.text(client.name, tableHeaders.name.x, yPosition + 1, {
         width: tableHeaders.name.width,
         ellipsis: true,
       })
 
       // Amount
-      doc.text(`R$ ${Number(client.amount).toFixed(2)}`, tableHeaders.amount.x, yPosition)
+      doc.text(`R$ ${Number(client.amount).toFixed(2)}`, tableHeaders.amount.x, yPosition + 1)
 
       // Updated date in PT-BR format
       doc.text(
         format(client.updatedAt, 'dd/MM/yyyy', { locale: ptBR }),
         tableHeaders.updatedAt.x,
-        yPosition,
+        yPosition + 1,
       )
 
       yPosition += 25

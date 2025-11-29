@@ -17,6 +17,7 @@ import { Card } from '@/src/components/base-components/card'
 import { Input } from '@/src/components/base-components/input'
 import { Label } from '@/src/components/base-components/label'
 import { handleCpfInputFormatting } from '@/src/utils/format'
+import { GoBackBtn } from '../back-btn'
 
 const paymentSchema = z.object({
 	clientId: z.string().min(1, 'Cliente é obrigatório'),
@@ -131,6 +132,7 @@ export default function CreatePaymentForm({
 	return (
 		<div className="space-y-6">
 			<div>
+				<GoBackBtn />
 				<h2 className="font-bold text-2xl text-slate-800">Novo Pagamento</h2>
 				<p className="mt-2 text-slate-600">
 					Registre um novo pagamento para um cliente
@@ -210,11 +212,10 @@ export default function CreatePaymentForm({
 							{paymentMethods.map((method) => (
 								<Card
 									key={method.id}
-									className={`cursor-pointer p-4 transition-all ${
-										form.watch('paymentMethod') === method.id
-											? 'border border-slate-800 bg-slate-50'
-											: 'hover:border-slate-300'
-									}`}
+									className={`cursor-pointer p-4 transition-all ${form.watch('paymentMethod') === method.id
+										? 'border border-slate-800 bg-slate-50'
+										: 'hover:border-slate-300'
+										}`}
 									onClick={() => form.setValue('paymentMethod', method.id)}
 								>
 									<div className="flex items-center gap-3">
@@ -241,7 +242,7 @@ export default function CreatePaymentForm({
 					<Button
 						type="button"
 						variant="ghost"
-						onClick={() => router.push(`/dashboard/pagamentos`)}
+						onClick={() => router.back()}
 					>
 						Annuler
 					</Button>

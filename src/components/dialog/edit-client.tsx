@@ -1,8 +1,10 @@
 'use client'
 
+import { PencilLineIcon, XIcon } from 'lucide-react'
 import { useState } from 'react'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -26,13 +28,29 @@ export const EditUser = ({ client, organizationId }: EditUserProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Editar cliente</Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          className='flex items-center justify-center gap-2 border-border'
+        >
+          Editar
+          <PencilLineIcon className='size-5' />
+        </Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader className="flex w-full items-center justify-between">
-          <DialogTitle>Editar cliente</DialogTitle>
+        <DialogHeader className="flex w-full flex-row items-center justify-between">
+          <DialogTitle className="font-bold text-2xl">Editar cliente</DialogTitle>
+          <DialogClose asChild>
+            <Button
+              variant="ghost"
+              className="flex h-10 w-10 items-center justify-center border-border hover:bg-slate-200 hover:text-slate-800"
+            >
+              <XIcon />
+              <span className="sr-only">Cancelar</span>
+            </Button>
+          </DialogClose>
         </DialogHeader>
-        <div>
+        <div className="mt-6">
           <EditClientForm
             client={client}
             organizationId={organizationId}

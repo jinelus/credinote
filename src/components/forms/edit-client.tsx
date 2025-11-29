@@ -70,7 +70,6 @@ export default function EditClientForm({ client, organizationId, onClose }: Edit
 
   return (
     <div className="mx-auto max-w-4xl">
-      <h1 className="mb-8 font-bold text-3xl text-slate-800">Novo Cliente</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-14">
         <div className="flex flex-col gap-4">
