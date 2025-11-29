@@ -4,9 +4,9 @@ import Button from '@/src/components/base-components/button'
 import { Card } from '@/src/components/base-components/card'
 import { Container } from '@/src/components/base-components/container'
 import { OrderList } from '@/src/components/orders/order-list'
-
 import { getSession } from '@/src/lib/get-session'
-import { getOrders } from './action'
+import { getOrders, getOrdersAndPaymentsData, getTopClientsByOrders } from './action'
+import { DashboardCharts } from './dashboard-charts'
 
 export default async function DashboardPage() {
   const { organization } = await getSession()
@@ -44,6 +44,10 @@ export default async function DashboardPage() {
 
   const recentOrders = await getOrders(organization.slug, { perPage: 5 })
 
+  // Fetch chart data
+  const ordersPaymentsData = await getOrdersAndPaymentsData(organization.slug, '90d')
+  const topClientsData = await getTopClientsByOrders(organization.slug)
+
   if (!recentOrders.success || !recentOrders.data) {
     return
   }
@@ -55,11 +59,16 @@ export default async function DashboardPage() {
           <h1 className="font-bold text-3xl text-slate-800">Dashboard</h1>
           <p className="mt-2 text-slate-600">Bem-vindo ao seu painel de controle</p>
         </div>
+        <DashboardCharts
+          slug={organization.slug}
+          initialOrdersPaymentsData={ordersPaymentsData.success ? ordersPaymentsData.data : []}
+          topClientsData={topClientsData.success ? topClientsData.data : []}
+        />
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {quickActions.map((action) => (
-            <Card key={action.title} className='p-4 transition-shadow hover:shadow-lg'>
-              <Link href={action.href} className="flex items-center justify-center gap-4">
+            <Card key={action.title} className="p-3 transition-shadow hover:shadow-lg">
+              <Link href={action.href} className='flex items-center justify-center gap-2'>
                 <div className={`rounded-lg p-3 ${action.color} text-white`}>{action.icon}</div>
                 <div className="flex flex-col">
                   <h3 className="font-semibold text-lg text-slate-800">{action.title}</h3>
