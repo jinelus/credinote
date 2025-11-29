@@ -73,7 +73,6 @@ export default async function PaymentsPage({
 				<div className="w-full">
 					<PaymentList
 						payments={response.data.payments ?? []}
-						currentPage={queries.page ?? 1}
 					/>
 					<PaginationButtons
 						currentPage={queries.page ?? 1}
