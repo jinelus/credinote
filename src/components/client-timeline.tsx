@@ -1,6 +1,8 @@
+import type { PaymentMethod } from '@prisma/client'
 import dayjs from 'dayjs'
-import { Calendar, DollarSign, ShoppingCart } from 'lucide-react'
+import { Calendar, CreditCard, ShoppingBag } from 'lucide-react'
 import { formatCurrency } from '@/src/lib/utils'
+import { formatPaymentMethod } from '../utils/format'
 
 export type TimelineEvent = {
   id: string
@@ -18,20 +20,14 @@ interface ClientTimelineProps {
 
 export default function ClientTimeline({ events }: ClientTimelineProps) {
   return (
-    <div className="space-y-6">
-      <div className="relative">
-        <div className={'-translate-x-1/2 absolute top-0 bottom-0 left-1/2 w-0.5 bg-slate-200'} />
-
-        <div className="space-y-4">
-          {events.length > 0 ? (
-            events.map((event) => <TimelineItem key={event.id} event={event} />)
-          ) : (
-            <div className="flex items-center justify-center py-12 text-slate-500 text-sm">
-              Nenhum evento encontrado
-            </div>
-          )}
+    <div className="relative space-y-8 pl-6 before:absolute before:top-2 before:left-2 before:h-full before:w-[2px] before:bg-muted">
+      {events.length > 0 ? (
+        events.map((event) => <TimelineItem key={event.id} event={event} />)
+      ) : (
+        <div className="flex items-center justify-center py-12 text-muted-foreground text-sm">
+          Nenhum evento encontrado
         </div>
-      </div>
+      )}
     </div>
   )
 }
@@ -39,56 +35,65 @@ export default function ClientTimeline({ events }: ClientTimelineProps) {
 function TimelineItem({ event }: { event: TimelineEvent }) {
   const isOrder = event.type === 'order'
   const formattedAmount = formatCurrency(event.amount)
-  const formattedDate = dayjs(event.date).format('DD/MM/YYYY - HH:mm')
+  const formattedDate = dayjs(event.date).format('DD [de] MMMM [às] HH:mm')
 
   return (
-    <div className={`flex items-center gap-4 ${isOrder ? 'flex-row' : 'flex-row-reverse'}`}>
-      <div className={`w-5/12 ${isOrder ? 'text-right' : 'text-left'}`}>
-        <div
-          className={`rounded-lg border-l-4 bg-white p-4 shadow-md ${isOrder ? 'border-blue-500' : 'border-green-500'}`}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {isOrder ? (
-                <ShoppingCart className="h-5 w-5 text-blue-500" aria-hidden />
-              ) : (
-                <DollarSign className="h-5 w-5 text-green-500" aria-hidden />
-              )}
-              <span className="hidden font-semibold lg:block">
-                {isOrder ? 'Pedido' : 'Pagamento'}
-              </span>
-            </div>
-          </div>
+    <div className="relative">
+      {/* Icon Indicator */}
+      <div
+        className={`-left-[29px] absolute top-1 flex h-8 w-8 items-center justify-center rounded-full border-4 border-background ${isOrder ? 'bg-indigo-100 text-indigo-600' : 'bg-emerald-100 text-emerald-600'
+          }`}
+      >
+        {isOrder ? <ShoppingBag className="h-4 w-4" /> : <CreditCard className="h-4 w-4" />}
+      </div>
 
-          <p className="mb-1 text-slate-600 text-sm">{event.description}</p>
-          <p className="font-bold text-lg">{formattedAmount}</p>
-
-          <div className="flex items-center gap-1 text-slate-500 text-xs">
-            <Calendar className="hidden h-3 w-3 lg:flex" aria-hidden />
-            {formattedDate}
+      {/* Card Content */}
+      <div className="group rounded-xl border bg-card p-4 transition-all hover:shadow-md">
+        <div className="mb-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span
+              className={`rounded-full px-2.5 py-0.5 font-medium text-xs ${isOrder ? 'bg-indigo-50 text-indigo-700' : 'bg-emerald-50 text-emerald-700'
+                }`}
+            >
+              {isOrder ? 'Pedido Realizado' : 'Pagamento Recebido'}
+            </span>
+            <span className="flex items-center gap-1 text-muted-foreground text-xs">
+              <Calendar className="h-3 w-3" />
+              {formattedDate}
+            </span>
           </div>
+          <span className={`font-bold ${isOrder ? 'text-foreground' : 'text-emerald-600'}`}>
+            {formattedAmount}
+          </span>
         </div>
-      </div>
 
-      <div className="relative z-10">
-        <div
-          className={`h-4 w-4 rounded-full border-4 ${isOrder ? 'border-blue-200 bg-blue-500' : 'border-green-200 bg-green-500'}`}
-        />
-      </div>
+        {event.description.length > 0 && (
+          <p className='line-clamp-3 text-muted-foreground text-sm'>{event.description}</p>
+        )}
 
-      <div className="w-5/12" />
+        {event.method && (
+          <p className="mt-1 text-muted-foreground text-sm">
+            Método:{' '}
+            <span className="font-medium text-foreground">
+              {formatPaymentMethod(event.method as PaymentMethod)}
+            </span>
+          </p>
+        )}
+      </div>
     </div>
   )
 }
 
 export function TimelineSkeleton() {
   return (
-    <div className="animate-pulse space-y-8">
+    <div className="relative space-y-8 pl-6 before:absolute before:top-2 before:left-2 before:h-full before:w-[2px] before:bg-muted">
       {[1, 2, 3].map((item) => (
-        <div key={item} className="flex items-center gap-4">
-          <div className="h-24 w-5/12 rounded bg-slate-200" />
-          <div className="h-4 w-4 rounded-full bg-slate-300" />
-          <div className="w-5/12" />
+        <div key={item} className="relative">
+          <div className="-left-[29px] absolute top-1 h-8 w-8 rounded-full border-4 border-background bg-muted" />
+          <div className="h-24 rounded-xl border bg-card p-4">
+            <div className="mb-4 h-4 w-1/3 rounded bg-muted" />
+            <div className="h-4 w-2/3 rounded bg-muted" />
+          </div>
         </div>
       ))}
     </div>
