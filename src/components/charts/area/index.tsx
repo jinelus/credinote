@@ -77,13 +77,13 @@ export function ChartAreaInteractive({ data, onTimeRangeChange }: ChartAreaInter
                     </SelectTrigger>
                     <SelectContent className="rounded-xl">
                         <SelectItem value="90d" className="rounded-lg">
-                            Last 3 months
+                            Ultimos 3 meses
                         </SelectItem>
                         <SelectItem value="30d" className="rounded-lg">
-                            Last 30 days
+                            Ultimos 30 dias
                         </SelectItem>
                         <SelectItem value="7d" className="rounded-lg">
-                            Last 7 days
+                            Ultimos 7 dias
                         </SelectItem>
                     </SelectContent>
                 </Select>
@@ -127,7 +127,7 @@ export function ChartAreaInteractive({ data, onTimeRangeChange }: ChartAreaInter
                                             year: 'numeric',
                                         })
                                     }}
-                                    indicator="dot"
+                                    indicator="dashed"
                                 />
                             }
                         />

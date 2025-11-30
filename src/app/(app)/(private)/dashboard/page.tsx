@@ -56,8 +56,8 @@ export default async function DashboardPage() {
     <Container>
       <div className="space-y-8 pb-8">
         <div>
-          <h1 className="font-bold text-3xl text-slate-800">Dashboard</h1>
-          <p className="mt-2 text-slate-600">Bem-vindo ao seu painel de controle</p>
+          <h1 className="font-bold text-3xl text-foreground">Dashboard</h1>
+          <p className="mt-2 text-muted-foreground">Bem-vindo ao seu painel de controle</p>
         </div>
         <DashboardCharts
           slug={organization.slug}
@@ -67,11 +67,11 @@ export default async function DashboardPage() {
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {quickActions.map((action) => (
-            <Card key={action.title} className="p-3 transition-shadow hover:shadow-lg">
-              <Link href={action.href} className='flex items-center justify-center gap-2'>
+            <Card key={action.title} className="p-4 transition-shadow hover:shadow-lg">
+              <Link href={action.href} className="flex items-center justify-center gap-4">
                 <div className={`rounded-lg p-3 ${action.color} text-white`}>{action.icon}</div>
                 <div className="flex flex-col">
-                  <h3 className="font-semibold text-lg text-slate-800">{action.title}</h3>
+                  <h3 className='font-semibold text-foreground text-lg'>{action.title}</h3>
                   <p className="mt-1 text-muted-foreground text-sm">{action.description}</p>
                 </div>
               </Link>
@@ -82,40 +82,47 @@ export default async function DashboardPage() {
         <div className="flex flex-col gap-8 lg:flex-row">
           <div className="mt-8 flex-1">
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="font-semibold text-slate-800 text-xl">Pedidos Recentes</h2>
+              <h2 className="font-semibold text-foreground text-xl">Pedidos Recentes</h2>
               <div className="flex items-center gap-4">
-                <Link href={`/dashboard/pedidos`} className="text-slate-600 hover:text-slate-900">
-                  <Button variant="ghost" size="sm" className="text-slate-600 hover:text-white">
+                <Link
+                  href={`/dashboard/pedidos`}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground hover:text-foreground"
+                  >
                     Ver todos
                   </Button>
                 </Link>
               </div>
             </div>
 
-            <div className="overflow-hidden rounded-lg bg-white shadow">
+            <div className="overflow-hidden rounded-lg bg-card shadow">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-slate-200">
+                  <thead className="bg-muted">
                     <tr>
-                      <th className="px-6 py-3 text-left font-medium text-slate-500 text-xs uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left font-medium text-muted-foreground text-xs uppercase tracking-wider">
                         Cliente
                       </th>
-                      <th className="px-6 py-3 text-left font-medium text-slate-500 text-xs uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left font-medium text-muted-foreground text-xs uppercase tracking-wider">
                         Valor
                       </th>
-                      <th className="px-6 py-3 text-left font-medium text-slate-500 text-xs uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left font-medium text-muted-foreground text-xs uppercase tracking-wider">
                         Data
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200">
+                  <tbody className="divide-y divide-border">
                     {recentOrders.data.orders.length > 0 ? (
                       recentOrders.data.orders.map((order, index) => (
                         <OrderList key={order.id} index={index} order={order} />
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={3} className="py-3 text-center">
+                        <td colSpan={3} className="py-3 text-center text-muted-foreground">
                           {' '}
                           Nenhum pedido achado{' '}
                         </td>

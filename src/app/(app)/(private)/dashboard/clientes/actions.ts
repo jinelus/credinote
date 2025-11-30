@@ -4,7 +4,6 @@ import dayjs from 'dayjs'
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@/src/db/prisma'
 import { withErrorHandling } from '@/src/utils/error-handler'
-import { formatPaymentMethod } from '@/src/utils/format'
 
 export interface RegisterClientProps {
   name: string
@@ -399,7 +398,7 @@ export async function getClientDetails({
       type: 'order' as const,
       date: order.date.toISOString(),
       amount: Number(order.total),
-      description: 'Pedido registrado',
+      description: order.description ?? 'Pedido registrado, sem detalhes',
       status: 'completed' as const,
     }))
 
@@ -408,7 +407,7 @@ export async function getClientDetails({
       type: 'payment' as const,
       date: payment.paidAt.toISOString(),
       amount: Number(payment.amount),
-      description: `${formatPaymentMethod(payment.method)}`,
+      description: ``,
       method: payment.method,
     }))
 
