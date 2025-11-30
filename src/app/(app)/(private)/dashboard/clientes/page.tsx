@@ -47,7 +47,7 @@ export default async function ClientsPage({
         <div className="flex items-center gap-4">
           <OrderSelect />
           <Link href={`/dashboard/novo-cliente`}>
-            <Button className="bg-slate-800 text-white hover:bg-slate-900" size="sm">
+            <Button size="sm">
               Novo Cliente
             </Button>
           </Link>

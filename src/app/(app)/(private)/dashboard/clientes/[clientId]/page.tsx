@@ -55,10 +55,10 @@ export default async function ClientDashboardPage({
     <Container className="py-8">
       <div className="space-y-8">
         <GoBackBtn />
-        <div className="flex items-center justify-between">
+        <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
           <div>
-            <h1 className="mt-2 font-bold text-3xl text-slate-800">{client.name}</h1>
-            <p className="text-slate-500 text-sm">CPF: {client.cpf}</p>
+            <h1 className="mt-2 font-bold text-3xl text-foreground">{client.name}</h1>
+            <p className="text-muted-foreground text-sm">CPF: {client.cpf}</p>
           </div>
           <div className="flex gap-4">
             <EditUser client={client} organizationId={organization.id} />
@@ -67,19 +67,23 @@ export default async function ClientDashboardPage({
 
         <div className="grid items-start gap-4 md:grid-cols-3">
           <Card className="p-6">
-            <h3 className="font-medium text-slate-800 text-sm">Pedidos</h3>
-            <p className="text-slate-500 text-sm">{ordersCount} pedido(s) registrados</p>
+            <h3 className="font-medium text-foreground text-sm">Pedidos</h3>
+            <p className="text-muted-foreground text-sm">{ordersCount} pedido(s) registrados</p>
           </Card>
           <Card className="p-6">
-            <h3 className="font-medium text-slate-800 text-sm">Pagamentos</h3>
-            <p className="text-slate-500 text-sm">{paymentsCount} pagamento(s) registrados</p>
+            <h3 className="font-medium text-foreground text-sm">Pagamentos</h3>
+            <p className="text-muted-foreground text-sm">
+              {paymentsCount} pagamento(s) registrados
+            </p>
           </Card>
           <Card className="p-6">
-            <h3 className="font-medium text-slate-800 text-sm">Saldo em aberto</h3>
-            <p className="mt-2 font-semibold text-2xl text-slate-800">
+            <h3 className="font-medium text-foreground text-sm">Saldo em aberto</h3>
+            <p className="mt-2 font-semibold text-2xl text-foreground">
               {formatCurrency(outstandingBalance)}
             </p>
-            <p className="text-slate-500 text-sm">Atualizado automaticamente após pagamentos</p>
+            <p className="text-muted-foreground text-sm">
+              Atualizado automaticamente após pagamentos
+            </p>
           </Card>
         </div>
 
@@ -87,40 +91,40 @@ export default async function ClientDashboardPage({
           <div className="w-full lg:w-auto lg:flex-1">
             <Card className="px-3 py-6 lg:p-6">
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="font-semibold text-slate-800 text-xl">Linha do tempo</h2>
-                <span className="text-slate-500 text-sm">{events.length} evento(s)</span>
+                <h2 className="font-semibold text-foreground text-xl">Linha do tempo</h2>
+                <span className="text-muted-foreground text-sm">{events.length} evento(s)</span>
               </div>
               <ClientTimeline clientId={client.id} events={events} />
             </Card>
             {maxPage > 1 && <PaginationButtons currentPage={page} maxPage={maxPage} />}
           </div>
 
-          <div className="sticky top-0 w-full space-y-4 lg:w-auto">
-            <div className='flex w-full flex-col gap-4'>
+          <div className="top-0 w-full space-y-4 lg:sticky lg:w-auto">
+            <div className="flex w-full flex-col gap-4">
               <Link href={`/dashboard/nova-compra?client=${client.id}`}>
                 <Button variant="outline" className="w-full">
                   Nova Compra
                 </Button>
               </Link>
               <Link href={`/dashboard/novo-pagamento?client=${client.id}`}>
-                <Button className="w-full bg-green-600 text-white hover:bg-green-700">
+                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
                   Novo Pagamento
                 </Button>
               </Link>
             </div>
             <Card className="w-full space-y-4 p-6 lg:w-auto">
-              <h2 className="font-semibold text-slate-800 text-xl">Informações do cliente</h2>
-              <div className="space-y-3 text-slate-600 text-sm">
+              <h2 className="font-semibold text-foreground text-xl">Informações do cliente</h2>
+              <div className="space-y-3 text-muted-foreground text-sm">
                 <p>
-                  <span className="font-medium text-slate-500">Telefone: </span>
+                  <span className="font-medium text-foreground">Telefone: </span>
                   {client.telephone || 'Não informado'}
                 </p>
                 <p>
-                  <span className="font-medium text-slate-500">Criado em: </span>
+                  <span className="font-medium text-foreground">Criado em: </span>
                   {client.createdAt.toLocaleDateString('pt-BR')}
                 </p>
                 <p>
-                  <span className="font-medium text-slate-500">Última atualização: </span>
+                  <span className="font-medium text-foreground">Última atualização: </span>
                   {client.updatedAt.toLocaleDateString('pt-BR')}
                 </p>
               </div>
