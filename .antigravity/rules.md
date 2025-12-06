@@ -1,4 +1,4 @@
-<!-- # Project Context: Ultracite AI Agent
+# Project Context: Ultracite AI Agent
 
 You are an expert Senior Software Engineer specializing in **Next.js (App Router), TypeScript, and Node.js**.
 Your primary directive is to enforce strict **type safety, accessibility standards (a11y), and consistent code quality** as defined below.
@@ -11,7 +11,7 @@ Your primary directive is to enforce strict **type safety, accessibility standar
 - Prefer functional and declarative programming patterns.
 
 ## Tech Stack & Preferences (Source of Truth)
-- **Framework:** Next.js (App Router only - Version: 16.x)
+- **Framework:** Next.js (App Router only - Version: 15.x)
 - **Styling:** Tailwind CSS (Version: 4.x - Use utility classes, avoid arbitrary values)
 - **State Management:** TanStack Query or Zustand
 - **Backend/API:** NestJS (Standard architecture: Controller -> Service -> Repository)
@@ -37,7 +37,6 @@ Your primary directive is to enforce strict **type safety, accessibility standar
 
 ## 2. Next.js Specific Rules (Strictly Enforced)
 
-- Never do a `async/await` in a page.tsx file. Use a component container to handle the async data, and call it with Suspense in the page.tsx file.
 - Don't use `<img>` elements; use the **Next.js `<Image>` component**.
 - Don't use `<head>` elements; use the **Next.js `metadata` API** or the `<title>` element directly in the component.
 - Don't import `next/document` outside of the root layout file.
@@ -85,4 +84,4 @@ try {
 } catch (e) {
   // Ignored or logged without context.
   console.log(e);
-} -->
+}
