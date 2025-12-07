@@ -2,78 +2,85 @@
 
 import { prisma } from '@/src/db/prisma'
 import { withErrorHandling } from '@/src/utils/error-handler'
+import { addCache } from '../(app)/(private)/dashboard/action'
 
 export interface CreateOrganizationParams {
-	name: string
-	userId: string
+  name: string
+  userId: string
 }
 
 function generateSlug(name: string): string {
-	return name
-		.toLowerCase()
-		.trim()
-		.replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
-		.replace(/\s+/g, '-') // Replace spaces with hyphens
-		.replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
-		.replace(/^-|-$/g, '') // Remove leading/trailing hyphens
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+    .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
 }
 
 export async function createOrganization(params: CreateOrganizationParams) {
-	const { name } = params
+  const { name } = params
 
-	const result = await withErrorHandling(async () => {
-		const organization = await prisma.organization.create({
-			data: {
-				name,
-				slug: generateSlug(name),
-			},
-		})
+  const result = await withErrorHandling(async () => {
+    const organization = await prisma.organization.create({
+      data: {
+        name,
+        slug: generateSlug(name),
+      },
+    })
 
-		await prisma.user.update({
-			where: {
-				id: params.userId,
-			},
-			data: {
-				organizationId: organization.id,
-			},
-		})
+    await prisma.user.update({
+      where: {
+        id: params.userId,
+      },
+      data: {
+        organizationId: organization.id,
+      },
+    })
 
-		return {
-			success: true,
-			data: {
-				organization,
-			},
-		}
-	})
+    await addCache(`organization-${organization.id}`)
 
-	return result
+    return {
+      success: true,
+      data: {
+        organization,
+      },
+    }
+  })
+
+  return result
 }
 
 export async function getOrganizationBySlug(slug: string) {
-	const result = await prisma.organization.findUnique({
-		where: {
-			slug,
-		},
-	})
+  const result = await prisma.organization.findUnique({
+    where: {
+      slug,
+    },
+  })
 
-	return result
+  await addCache(`organization-${result?.id}`)
+
+  return result
 }
 
 export async function getUserWithOrganization(email: string) {
-	const result = await prisma.user.findUnique({
-		where: {
-			email,
-		},
-		include: {
-			organization: {
-				select: {
-					id: true,
-					slug: true,
-					name: true,
-				},
-			},
-		},
-	})
+  const result = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+    include: {
+      organization: {
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+        },
+      },
+    },
+  })
 
-	return result
+  await addCache(`organization-${result?.organization?.id}`)
+
+  return result
 }

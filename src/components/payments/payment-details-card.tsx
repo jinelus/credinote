@@ -1,5 +1,6 @@
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import type { Route } from 'next'
 import Link from 'next/link'
 import type { Payment } from '@/src/app/(app)/(private)/dashboard/pagamentos/actions'
 import Button from '@/src/components/base-components/button'
@@ -7,92 +8,77 @@ import { Card } from '@/src/components/base-components/card'
 import { formatCurrency } from '@/src/lib/utils'
 
 type PaymentDetailsCardProps = {
-	payment: Payment
-	slug: string
-	redirectCancelLink: string
+  payment: Payment
+  slug: string
+  redirectCancelLink: string
 }
 
-export function PaymentDetailsCard({
-	payment,
-	slug,
-	redirectCancelLink,
-}: PaymentDetailsCardProps) {
-	return (
-		<Card className="p-6">
-			<div className="space-y-6">
-				<div>
-					<h2 className="font-semibold text-lg text-slate-800">
-						Detalhes do Pagamento
-					</h2>
-					<p className="mt-1 text-slate-600 text-sm">ID: {payment.id}</p>
-				</div>
+export function PaymentDetailsCard({ payment, slug, redirectCancelLink }: PaymentDetailsCardProps) {
+  return (
+    <Card className="p-6">
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-semibold text-lg text-slate-800">Detalhes do Pagamento</h2>
+          <p className="mt-1 text-slate-600 text-sm">ID: {payment.id}</p>
+        </div>
 
-				<div className="space-y-4">
-					<div>
-						<h3 className="font-medium text-slate-500 text-sm">Cliente</h3>
-						<p className="mt-1 text-slate-900 text-sm">{payment.clientName}</p>
-					</div>
+        <div className="space-y-4">
+          <div>
+            <h3 className="font-medium text-slate-500 text-sm">Cliente</h3>
+            <p className="mt-1 text-slate-900 text-sm">{payment.clientName}</p>
+          </div>
 
-					<div>
-						<h3 className="font-medium text-slate-500 text-sm">Valor</h3>
-						<p className="mt-1 text-slate-900 text-sm">
-							{formatCurrency(payment.amount)}
-						</p>
-					</div>
+          <div>
+            <h3 className="font-medium text-slate-500 text-sm">Valor</h3>
+            <p className="mt-1 text-slate-900 text-sm">{formatCurrency(payment.amount)}</p>
+          </div>
 
-					<div>
-						<h3 className="font-medium text-slate-500 text-sm">
-							Método de Pagamento
-						</h3>
-						<span
-							className={`mt-1 inline-flex rounded-full px-2 font-semibold text-xs leading-5 ${
-								payment.method === 'CASH'
-									? 'bg-green-100 text-green-800'
-									: payment.method === 'CARD'
-										? 'bg-blue-100 text-blue-800'
-										: 'bg-purple-100 text-purple-800'
-							}`}
-						>
-							{payment.method === 'CASH'
-								? 'Dinheiro'
-								: payment.method === 'CARD'
-									? 'Cartão'
-									: 'PIX'}
-						</span>
-					</div>
+          <div>
+            <h3 className="font-medium text-slate-500 text-sm">Método de Pagamento</h3>
+            <span
+              className={`mt-1 inline-flex rounded-full px-2 font-semibold text-xs leading-5 ${
+                payment.method === 'CASH'
+                  ? 'bg-green-100 text-green-800'
+                  : payment.method === 'CARD'
+                    ? 'bg-blue-100 text-blue-800'
+                    : 'bg-purple-100 text-purple-800'
+              }`}
+            >
+              {payment.method === 'CASH'
+                ? 'Dinheiro'
+                : payment.method === 'CARD'
+                  ? 'Cartão'
+                  : 'PIX'}
+            </span>
+          </div>
 
-					<div>
-						<h3 className="font-medium text-slate-500 text-sm">
-							Data do Pagamento
-						</h3>
-						<p className="mt-1 text-slate-900 text-sm">
-							{format(payment.paidAt, "dd 'de' MMMM 'de' yyyy", {
-								locale: ptBR,
-							})}
-						</p>
-					</div>
-				</div>
+          <div>
+            <h3 className="font-medium text-slate-500 text-sm">Data do Pagamento</h3>
+            <p className="mt-1 text-slate-900 text-sm">
+              {format(payment.paidAt, "dd 'de' MMMM 'de' yyyy", {
+                locale: ptBR,
+              })}
+            </p>
+          </div>
+        </div>
 
-				<div className="flex flex-col gap-2">
-					<Link href={`/${slug}/editar-pagamento/${payment.id}`}>
-						<Button
-							className="w-full bg-slate-800 text-white hover:bg-slate-900"
-							size="sm"
-						>
-							Editar Pagamento
-						</Button>
-					</Link>
-					<Link href={redirectCancelLink}>
-						<Button
-							variant="ghost"
-							className="w-full text-slate-600 hover:text-slate-900"
-							size="sm"
-						>
-							Voltar
-						</Button>
-					</Link>
-				</div>
-			</div>
-		</Card>
-	)
+        <div className="flex flex-col gap-2">
+          <Link href={`/${slug}/editar-pagamento/${payment.id}` as Route}>
+            <Button className="w-full bg-slate-800 text-white hover:bg-slate-900" size="sm">
+              Editar Pagamento
+            </Button>
+          </Link>
+          <Link href={redirectCancelLink as Route}>
+            <Button
+              variant="ghost"
+              className="w-full text-slate-600 hover:text-slate-900"
+              size="sm"
+            >
+              Voltar
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </Card>
+  )
 }

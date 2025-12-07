@@ -41,8 +41,9 @@ function TimelineItem({ event }: { event: TimelineEvent }) {
     <div className="relative">
       {/* Icon Indicator */}
       <div
-        className={`-left-[29px] absolute top-1 flex h-8 w-8 items-center justify-center rounded-full border-4 border-background ${isOrder ? 'bg-indigo-100 text-indigo-600' : 'bg-emerald-100 text-emerald-600'
-          }`}
+        className={`-left-[29px] absolute top-1 flex h-8 w-8 items-center justify-center rounded-full border-4 border-background ${
+          isOrder ? 'bg-indigo-100 text-indigo-600' : 'bg-emerald-100 text-emerald-600'
+        }`}
       >
         {isOrder ? <ShoppingBag className="h-4 w-4" /> : <CreditCard className="h-4 w-4" />}
       </div>
@@ -52,8 +53,9 @@ function TimelineItem({ event }: { event: TimelineEvent }) {
         <div className="mb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span
-              className={`rounded-full px-2.5 py-0.5 font-medium text-xs ${isOrder ? 'bg-indigo-50 text-indigo-700' : 'bg-emerald-50 text-emerald-700'
-                }`}
+              className={`rounded-full px-2.5 py-0.5 font-medium text-xs ${
+                isOrder ? 'bg-indigo-50 text-indigo-700' : 'bg-emerald-50 text-emerald-700'
+              }`}
             >
               {isOrder ? 'Pedido Realizado' : 'Pagamento Recebido'}
             </span>
@@ -68,7 +70,7 @@ function TimelineItem({ event }: { event: TimelineEvent }) {
         </div>
 
         {event.description.length > 0 && (
-          <p className='line-clamp-3 text-muted-foreground text-sm'>{event.description}</p>
+          <p className="line-clamp-3 text-muted-foreground text-sm">{event.description}</p>
         )}
 
         {event.method && (
