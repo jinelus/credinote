@@ -53,7 +53,7 @@ export const PaymentsPageContainer = async ({
             <div className="flex items-center gap-4">
               <OrderSelect />
               <Link href={`/dashboard/novo-pagamento`}>
-                <Button className="">Novo pagemento</Button>
+                <Button className="">Novo pagamento</Button>
               </Link>
             </div>
           </div>
