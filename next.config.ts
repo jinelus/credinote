@@ -2,11 +2,6 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ['pdfkit'],
-  webpack: (config) => {
-    config.resolve.alias.canvas = false
-    config.resolve.alias.encoding = false
-    return config
-  },
   async redirects() {
     return [
       {
@@ -15,6 +10,14 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
     ]
+  },
+  cacheComponents: true,
+  typedRoutes: true,
+  enablePrerenderSourceMaps: true,
+  productionBrowserSourceMaps: true,
+
+  experimental: {
+    globalNotFound: true,
   },
 }
 

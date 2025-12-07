@@ -1,13 +1,10 @@
-import { Container } from '@/src/components/base-components/container'
-import CreateClientForm from '@/src/components/forms/create-client'
-import { getSession } from '@/src/lib/get-session'
+import { Suspense } from 'react'
+import { NewClientPageContainer } from '@/src/components/page-containers/clients/new'
 
-export default async function ClientPage() {
-	const { organization } = await getSession()
-
-	return (
-		<Container className="">
-			<CreateClientForm slug={organization.slug} />
-		</Container>
-	)
+export default function ClientPage() {
+  return (
+    <Suspense>
+      <NewClientPageContainer />
+    </Suspense>
+  )
 }

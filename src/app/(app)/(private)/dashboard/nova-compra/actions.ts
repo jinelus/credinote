@@ -1,6 +1,7 @@
 'use server'
 
 import dayjs from 'dayjs'
+import { updateTag } from 'next/cache'
 import { prisma } from '@/src/db/prisma'
 import { withErrorHandling } from '@/src/utils/error-handler'
 
@@ -77,6 +78,9 @@ export async function addOrder({ slug, clientId, total, description }: AddOrderP
         amount: newAmount,
       },
     })
+
+    updateTag(`clients-${organization.slug}`)
+    updateTag(`client-details-${client.id}`)
 
     return {
       success: true,

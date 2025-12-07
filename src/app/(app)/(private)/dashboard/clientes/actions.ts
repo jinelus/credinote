@@ -1,9 +1,10 @@
 'use server'
 
 import dayjs from 'dayjs'
-import { revalidatePath } from 'next/cache'
+import { updateTag } from 'next/cache'
 import { prisma } from '@/src/db/prisma'
 import { withErrorHandling } from '@/src/utils/error-handler'
+import { addCache } from '../action'
 
 export interface RegisterClientProps {
   name: string
@@ -91,6 +92,8 @@ export async function registerClient(client: RegisterClientProps) {
       },
     })
 
+    updateTag(`clients-${slug}`)
+
     return {
       success: true,
       data: {
@@ -130,7 +133,8 @@ export async function editClient(client: EditClientUseCaseProps) {
       },
     })
 
-    revalidatePath(`/dashboard/clientes/${clientId}`)
+    updateTag(`clients-${organization.slug}`)
+    updateTag(`client-${clientId}`)
 
     return {
       success: true,
@@ -161,6 +165,9 @@ export async function deleteClient({ clientId, userId }: DeleteClientUseCaseProp
         id: clientId,
       },
     })
+
+    updateTag(`clients-${user.organizationId}`)
+    updateTag(`client-${clientId}`)
 
     return {
       success: true,
@@ -247,6 +254,8 @@ export async function fetchClients({ slug, params }: FetchClientsParams) {
       },
     })
 
+    await addCache(`clients-${slug}`)
+
     const maxPage = Math.ceil(clientsCount / (params?.perPage ?? 10))
 
     return {
@@ -292,6 +301,8 @@ export async function getClientByCpf({ slug, cpf }: GetClientByCpfParams) {
       }
     }
 
+    await addCache(`client-${client.id}`)
+
     return {
       success: true,
       data: {
@@ -318,6 +329,8 @@ export async function getClientById(id: string) {
         error: 'Client not found',
       }
     }
+
+    await addCache(`client-${id}`)
 
     return {
       success: true,
@@ -414,6 +427,8 @@ export async function getClientDetails({
     const allEvents: TimelineEventData[] = [...parsedOrders, ...parsedPayments]
       .sort((a, b) => (dayjs(b.date).isAfter(dayjs(a.date)) ? 1 : -1))
       .slice(skip, skip + perPage)
+
+    await addCache(`client-details-${client.id}`)
 
     return {
       success: true,

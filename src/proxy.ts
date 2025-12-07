@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const isAuthenticated = request.cookies.has('jcb.session_token')
 
   if (!isAuthenticated && request.nextUrl.pathname !== '/signin') {
@@ -14,5 +14,4 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
-  runtime: 'nodejs',
 }
