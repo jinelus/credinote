@@ -1,37 +1,26 @@
 import { createLoader, parseAsString, type SearchParams } from 'nuqs/server'
-import { Container } from '@/src/components/base-components/container'
-import CreatePaymentForm from '@/src/components/forms/create-payment'
-import { getSession } from '@/src/lib/get-session'
-import { getClientById } from '../clientes/actions'
+import { Suspense } from 'react'
+import {
+  NewPaymentContainer,
+  NewPaymentContainerSkeleton,
+} from '@/src/components/page-containers/payments/new-payment'
 
 const clientIdSearchParams = {
-	client: parseAsString,
+  client: parseAsString,
 }
 
 const loadSearchParams = createLoader(clientIdSearchParams)
 
-export default async function CreatePaymentPage({
-	searchParams,
+export default function CreatePaymentPage({
+  searchParams,
 }: {
-	searchParams: Promise<SearchParams>
+  searchParams: Promise<SearchParams>
 }) {
-	const { organization } = await getSession()
+  const queries = loadSearchParams(searchParams)
 
-	const { client } = await loadSearchParams(searchParams)
-
-	let clientFetched = null
-
-	if (client) {
-		const result = await getClientById(client)
-
-		if (result.success && result.data) {
-			clientFetched = result.data
-		}
-	}
-
-	return (
-		<Container className="">
-			<CreatePaymentForm slug={organization.slug} client={clientFetched} />
-		</Container>
-	)
+  return (
+    <Suspense fallback={<NewPaymentContainerSkeleton />}>
+      <NewPaymentContainer searchParams={queries} />
+    </Suspense>
+  )
 }

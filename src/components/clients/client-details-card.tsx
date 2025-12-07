@@ -1,4 +1,5 @@
 import { User, X } from 'lucide-react'
+import type { Route } from 'next'
 import Link from 'next/link'
 import { Card } from '@/src/components/base-components/card'
 import { Button } from '../ui/button'
@@ -23,8 +24,8 @@ export function ClientDetailsCard({ client, redirectCancelLink }: ClientDetailsC
         <div className="p-6">
           <div className="mb-6 flex items-center justify-between">
             <h2 className="font-bold text-slate-800 text-xl">Detalhes do Cliente</h2>
-            <Link href={`${redirectCancelLink}`}>
-              <button type='button' className="text-slate-400 hover:text-slate-500">
+            <Link href={`${redirectCancelLink as Route}`}>
+              <button type="button" className="text-slate-400 hover:text-slate-500">
                 <X className="h-5 w-5" />
               </button>
             </Link>

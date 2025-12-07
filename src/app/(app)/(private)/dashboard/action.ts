@@ -1,9 +1,16 @@
 'use server'
 
 import dayjs from 'dayjs'
+import { cacheTag } from 'next/cache'
 import { prisma } from '@/src/db/prisma'
 import { withErrorHandling } from '@/src/utils/error-handler'
 import type { PaginationParams } from '@/src/utils/types'
+
+export async function addCache(tag: string) {
+  'use cache'
+
+  cacheTag(tag)
+}
 
 export async function getOrders(
   slug: string,
@@ -58,6 +65,8 @@ export async function getOrders(
 
     const maxPage = Math.ceil(ordersCount / (perPage ?? 10))
 
+    await addCache(`orders-${slug}`)
+
     return {
       success: true,
       data: {
@@ -88,6 +97,8 @@ export async function getClient(id: string) {
       error: 'Client not found',
     }
   }
+
+  await addCache(`client-${id}`)
 
   return {
     success: true,
@@ -174,6 +185,8 @@ export async function getOrdersAndPaymentsData(
     }
   })
 
+  await addCache(`orders-payments-${slug}`)
+
   return result
 }
 
@@ -233,6 +246,8 @@ export async function getTopClientsByOrders(slug: string) {
       data: clientData,
     }
   })
+
+  await addCache(`top-clients-${slug}`)
 
   return result
 }
