@@ -31,10 +31,10 @@ export const EditUser = ({ client, organizationId }: EditUserProps) => {
         <Button
           size="sm"
           variant="ghost"
-          className='flex items-center justify-center gap-2 border-border'
+          className="flex items-center justify-center gap-2 border-border"
         >
           Editar
-          <PencilLineIcon className='size-5' />
+          <PencilLineIcon className="size-5" />
         </Button>
       </DialogTrigger>
       <DialogContent>
