@@ -27,7 +27,7 @@ const buttonStyles = tv({
 
 type ButtonVariants = VariantProps<typeof buttonStyles>
 
-interface ButtonProps extends ButtonVariants, React.ButtonHTMLAttributes<HTMLButtonElement> { }
+interface ButtonProps extends ButtonVariants, React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
 const Button: React.FC<ButtonProps> = ({ className, ...props }) => {
   return <button className={buttonStyles({ className, ...props })} {...props} />
