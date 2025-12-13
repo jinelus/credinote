@@ -1,15 +1,15 @@
-import { tv, VariantProps } from 'tailwind-variants'
+import { tv, type VariantProps } from 'tailwind-variants'
 
 const buttonStyles = tv({
   base: 'transition-colors duration-300 ease-linear disabled:cursor-not-allowed',
   variants: {
     variant: {
       solid:
-        'dark:disabled:hover-none hover:bg-slate-950 rounded-md bg-slate-800 text-white disabled:bg-slate-300 disabled:font-bold disabled:text-slate-950',
+        'dark:disabled:hover-none rounded-md bg-primary text-white hover:bg-primary/90 disabled:bg-slate-200 disabled:font-bold disabled:text-slate-400',
       ghost:
-        'bg-trasparent rounded-md border border-slate-800 text-slate-800 hover:bg-slate-800 hover:text-white disabled:border-slate-300 disabled:text-slate-300 disabled:hover:bg-transparent',
+        'rounded-md border border-border bg-trasparent hover:bg-primary hover:text-white disabled:border-border disabled:text-border disabled:hover:bg-transparent',
 
-      link: 'hover:text-slate-950 flex items-center justify-center gap-1 text-slate-800',
+      link: 'flex items-center justify-center gap-1 text-slate-800 hover:text-slate-950',
     },
     size: {
       sm: 'h-12 w-32 lg:h-10',
@@ -27,9 +27,7 @@ const buttonStyles = tv({
 
 type ButtonVariants = VariantProps<typeof buttonStyles>
 
-interface ButtonProps
-  extends ButtonVariants,
-  React.ButtonHTMLAttributes<HTMLButtonElement> { }
+interface ButtonProps extends ButtonVariants, React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
 const Button: React.FC<ButtonProps> = ({ className, ...props }) => {
   return <button className={buttonStyles({ className, ...props })} {...props} />

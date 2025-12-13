@@ -1,37 +1,43 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import './globals.css'
+import dynamic from 'next/dynamic'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
-import { SpeedInsights } from "@vercel/speed-insights/next"
+
+const VercelAnalitics = dynamic(() =>
+  import('../components/analictics/vercel').then((mod) => mod.VercelAnalitics),
+)
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+})
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+})
 
 export const metadata: Metadata = {
-  title: "JCB Mercado",
-  description: "Sistema de gestão para JCB Mercado",
-};
+  title: 'JCB Mercado',
+  description: 'Sistema de gestão para JCB Mercado',
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SpeedInsights />
-        <NuqsAdapter>
-          {children}
-        </NuqsAdapter>
+        <VercelAnalitics />
+        <NuqsAdapter>{children}</NuqsAdapter>
       </body>
     </html>
-  );
+  )
 }

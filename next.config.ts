@@ -1,7 +1,24 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
+  serverExternalPackages: ['pdfkit'],
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/dashboard',
+        permanent: false,
+      },
+    ]
+  },
+  cacheComponents: true,
+  typedRoutes: true,
+  enablePrerenderSourceMaps: true,
+  productionBrowserSourceMaps: true,
 
-export default nextConfig;
+  experimental: {
+    globalNotFound: true,
+  },
+}
+
+export default nextConfig
