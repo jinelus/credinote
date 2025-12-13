@@ -1,7 +1,12 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { env } from './lib/env'
+
+const isSecure = env?.BETTER_AUTH_URL !== 'http://localhost:3000'
+
+const cookieName = isSecure ? '__Secure-jcb.session_token' : 'jcb.session_token'
 
 export function proxy(request: NextRequest) {
-  const isAuthenticated = request.cookies.has('jcb.session_token')
+  const isAuthenticated = request.cookies.has(cookieName)
 
   if (!isAuthenticated && request.nextUrl.pathname !== '/signin') {
     const url = request.nextUrl.clone()
