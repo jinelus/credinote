@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { Card } from '../base-components/card'
 import { Search, User } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Card } from '../base-components/card'
 
 interface Client {
   id: string
@@ -23,10 +23,11 @@ export function ClientSelector({ clients, selectedClientId, onClientSelect }: Cl
   const filteredClients = useMemo(() => {
     if (!searchTerm) return clients
     const term = searchTerm.toLowerCase()
-    return clients.filter(client => 
-      client.name.toLowerCase().includes(term) ||
-      client.cpf.includes(term) ||
-      client.phone.includes(term)
+    return clients.filter(
+      (client) =>
+        client.name.toLowerCase().includes(term) ||
+        client.cpf.includes(term) ||
+        client.phone.includes(term),
     )
   }, [searchTerm, clients])
 
@@ -34,7 +35,7 @@ export function ClientSelector({ clients, selectedClientId, onClientSelect }: Cl
     <Card className="overflow-hidden">
       <div className="p-4">
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <Search className="h-5 w-5 text-slate-400" />
           </div>
           <input
@@ -42,7 +43,7 @@ export function ClientSelector({ clients, selectedClientId, onClientSelect }: Cl
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar cliente por nome, CPF ou telefone..."
-            className="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-md leading-5 bg-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-slate-800 sm:text-sm"
+            className="block w-full rounded-md border border-slate-300 bg-white py-2 pr-3 pl-10 leading-5 placeholder-slate-500 focus:border-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-800 sm:text-sm"
           />
         </div>
       </div>
@@ -51,21 +52,21 @@ export function ClientSelector({ clients, selectedClientId, onClientSelect }: Cl
         <table className="w-full">
           <thead className="bg-slate-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left font-medium text-slate-500 text-xs uppercase tracking-wider">
                 Nome
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider hidden sm:table-cell">
+              <th className="hidden px-6 py-3 text-left font-medium text-slate-500 text-xs uppercase tracking-wider sm:table-cell">
                 CPF
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left font-medium text-slate-500 text-xs uppercase tracking-wider">
                 Telefone
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-slate-200">
+          <tbody className="divide-y divide-slate-200 bg-white">
             {filteredClients.length === 0 ? (
               <tr>
-                <td colSpan={3} className="px-6 py-4 text-center text-sm text-slate-500">
+                <td colSpan={3} className="px-6 py-4 text-center text-slate-500 text-sm">
                   Nenhum cliente encontrado
                 </td>
               </tr>
@@ -74,27 +75,27 @@ export function ClientSelector({ clients, selectedClientId, onClientSelect }: Cl
                 <tr
                   key={client.id}
                   onClick={() => onClientSelect(client.id)}
-                  className={`hover:bg-slate-50 cursor-pointer ${
+                  className={`cursor-pointer hover:bg-slate-50 ${
                     selectedClientId === client.id ? 'bg-slate-100' : ''
                   }`}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="whitespace-nowrap px-6 py-4">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
-                        <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center">
+                      <div className="h-10 w-10 flex-shrink-0">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200">
                           <User className="h-5 w-5 text-slate-500" />
                         </div>
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-slate-900">{client.name}</div>
+                        <div className="font-medium text-slate-900 text-sm">{client.name}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
-                    <div className="text-sm text-slate-900">{client.cpf}</div>
+                  <td className="hidden whitespace-nowrap px-6 py-4 sm:table-cell">
+                    <div className="text-slate-900 text-sm">{client.cpf}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-slate-900">{client.phone}</div>
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <div className="text-slate-900 text-sm">{client.phone}</div>
                   </td>
                 </tr>
               ))

@@ -1,7 +1,6 @@
-import { Toaster } from "sonner";
+import { Toaster } from 'sonner'
 
-export default async function AppLayout({ children }: { children: React.ReactNode }) {
-
+export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <main>
       <Toaster richColors />
