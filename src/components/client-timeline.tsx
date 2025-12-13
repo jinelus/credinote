@@ -69,8 +69,10 @@ function TimelineItem({ event }: { event: TimelineEvent }) {
           </span>
         </div>
 
-        {event.description.length > 0 && (
+        {event.description.length > 0 ? (
           <p className="line-clamp-3 text-muted-foreground text-sm">{event.description}</p>
+        ) : (
+          <p className="line-clamp-3 text-muted-foreground text-sm"> Sem descrição </p>
         )}
 
         {event.method && (
