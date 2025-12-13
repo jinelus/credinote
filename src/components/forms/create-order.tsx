@@ -12,6 +12,7 @@ import { handleCpfInputFormatting } from '@/src/utils/format'
 import { GoBackBtn } from '../back-btn'
 import Button from '../base-components/button'
 import Spinner from '../base-components/spinner'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
 import { Textarea } from '../ui/textarea'
 
@@ -20,7 +21,7 @@ const formSchema = z.object({
   clientId: z.string().min(1, 'O cliente é obrigatório'),
   clientName: z.string(),
   description: z.string().optional(),
-  clientCpf: z.string().min(14, 'CPF inválido'),
+  clientCpf: z.string().length(14, 'CPF inválido'),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -48,6 +49,7 @@ export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) 
       clientId: client?.id || '',
       clientName: client?.name || '',
       clientCpf: client?.cpf || '',
+      description: '',
     },
     mode: 'onChange',
   })
@@ -90,6 +92,8 @@ export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) 
         toast.error(result.error)
       } else {
         toast.success('Compra cadastrada com sucesso')
+        form.reset()
+        router.refresh()
         router.push(`/dashboard`)
       }
     } catch (error) {
@@ -104,94 +108,137 @@ export default function CreateOrderForm({ slug, client }: CreateOrderFormProps) 
         <GoBackBtn />
         <h1 className="mb-8 font-bold text-3xl text-slate-800">Nova Compra</h1>
       </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-14">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="clientCpf"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-2">
+                  <FormLabel htmlFor="clientCpf" className="font-medium text-sm">
+                    CPF do Cliente
+                  </FormLabel>
+                  <FormControl>
+                    <div className="flex gap-2">
+                      <Input
+                        id="clientCpf"
+                        type="text"
+                        placeholder="000.000.000-00"
+                        {...field}
+                        maxLength={14}
+                        onChange={(e) => {
+                          handleCpfInputFormatting(e)
+                          field.onChange(e)
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-14">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="flex flex-col gap-2">
-            <label htmlFor="clientCpf" className="font-medium text-sm">
-              CPF do Cliente
-            </label>
-            <div className="flex gap-2">
-              <Input
-                id="clientCpf"
-                type="text"
-                placeholder="000.000.000-00"
-                {...form.register('clientCpf')}
-                maxLength={14}
-                onChange={(e) => {
-                  handleCpfInputFormatting(e)
-
-                  if (e.target.value.length === 14) {
-                    handleCpfSearch(e.target.value)
-                  }
-                }}
-                disabled={!!client}
-                className="disabled:border-gray-200 disabled:bg-gray-200 disabled:text-gray-800"
-              />
-              {isLoading && (
-                <Button type="button" className="flex w-10 items-center justify-center">
-                  <Spinner />
-                </Button>
+                          if (e.target.value.length === 14) {
+                            handleCpfSearch(e.target.value)
+                          }
+                        }}
+                        disabled={!!client}
+                        className="disabled:border-gray-200 disabled:bg-gray-200 disabled:text-gray-800"
+                      />
+                      {isLoading && (
+                        <Button type="button" className="flex w-10 items-center justify-center">
+                          <Spinner />
+                        </Button>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
-            {form.formState.errors.clientCpf && (
-              <p className="text-red-500 text-sm">{form.formState.errors.clientCpf.message}</p>
-            )}
+            />
           </div>
-        </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="flex flex-col gap-2">
-            <label htmlFor="clientName" className="font-medium text-sm">
-              Nome do Cliente
-            </label>
-            <Input
-              id="clientName"
-              type="text"
-              className="border-gray-100 bg-gray-100 text-slate-900"
-              disabled
-              value={form.control._getWatch('clientName')}
-              {...form.register('clientName')}
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="clientName"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-2">
+                  <FormLabel htmlFor="clientName" className="font-medium text-sm">
+                    Nome do Cliente
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      id="clientName"
+                      type="text"
+                      placeholder="Nome completo do cliente"
+                      {...field}
+                      disabled
+                      className="disabled:border-gray-200 disabled:bg-gray-200 disabled:text-gray-800"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="total"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-2">
+                  <FormLabel htmlFor="total" className="font-medium text-sm">
+                    Valor Total
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      id="total"
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      {...field}
+                      className="flex"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="grid w-full">
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-2">
+                  <FormLabel htmlFor="description" className="font-medium text-sm">
+                    Descrição (opcional)
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      id="description"
+                      placeholder="Detalhes adicionais sobre a compra"
+                      {...field}
+                      className="flex h-32 resize-none"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label htmlFor="total" className="font-medium text-sm">
-              Valor
-            </label>
-            <Input id="total" type="number" step="0.01" {...form.register('total')} />
+          <div className="flex justify-end space-x-4">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => router.back()}
+              disabled={form.formState.isSubmitting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              disabled={form.formState.isSubmitting || total <= 0}
+              className="disabled:text-gray-400"
+            >
+              {form.formState.isSubmitting ? 'Cadastrando...' : 'Cadastrar compra'}
+            </Button>
           </div>
-        </div>
-        <div className="grid w-full">
-          <div className="flex flex-col gap-2">
-            <label htmlFor="description" className="font-medium text-sm">
-              Descrição
-            </label>
-            <Textarea
-              id="description"
-              {...form.register('description')}
-              className="h-32 w-full resize-none focus:border-border focus:outline-none focus:ring-0"
-            />
-          </div>
-        </div>
-
-        <div className="flex justify-end space-x-4">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => router.back()}
-            disabled={form.formState.isSubmitting}
-          >
-            Cancelar
-          </Button>
-          <Button
-            type="submit"
-            disabled={form.formState.isSubmitting || total <= 0}
-            className="disabled:text-gray-400"
-          >
-            {form.formState.isSubmitting ? 'Cadastrando...' : 'Cadastrar compra'}
-          </Button>
-        </div>
-      </form>
+        </form>
+      </Form>
     </div>
   )
 }
