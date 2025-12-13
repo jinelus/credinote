@@ -63,7 +63,6 @@ export const RecentOrdersTableSkeleton = () => {
           <tbody className="divide-y divide-border">
             {Array.from({ length: 5 }).map((_, index) => (
               <tr key={`skeleton-row-${index}`} className="h-[57px]">
-                {' '}
                 {/* ← Hauteur fixe */}
                 <td className="px-6 py-4">
                   <Skeleton className="h-4 w-32" />
