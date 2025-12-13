@@ -1,9 +1,5 @@
-'use client'
-
 import { HandCoins, House, ShoppingCart, Users } from 'lucide-react'
-import type { Route } from 'next'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import {
   Sidebar,
   SidebarContent,
@@ -12,6 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '../ui/sidebar'
+import { SidebarLink } from './link'
 
 const navLinks = [
   {
@@ -37,8 +34,6 @@ const navLinks = [
 ]
 
 export const AppSidebar = () => {
-  const pathname = usePathname()
-
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -58,17 +53,7 @@ export const AppSidebar = () => {
           {navLinks.map((item) => {
             return (
               <SidebarMenuItem key={item.label + item.href}>
-                <SidebarMenuButton
-                  className="h-10 items-center gap-x-4 px-4"
-                  asChild
-                  tooltip={item.label}
-                  isActive={pathname === item.href}
-                >
-                  <Link href={item.href as Route}>
-                    {item.icon}
-                    <span className="">{item.label}</span>
-                  </Link>
-                </SidebarMenuButton>
+                <SidebarLink item={item} />
               </SidebarMenuItem>
             )
           })}

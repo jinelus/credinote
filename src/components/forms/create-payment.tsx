@@ -79,27 +79,21 @@ export default function CreatePaymentForm({ client, slug }: CreatePaymentFormPro
 
   const onSubmit = async (data: PaymentFormValues) => {
     const toastWaiting = toast.loading('Cadastrando pagamento...')
+    const result = await createPayment({
+      clientId: data.clientId,
+      amount: Number(data.amount),
+      method: data.paymentMethod,
+      paidAt: new Date(),
+      slug,
+    })
 
-    try {
-      const result = await createPayment({
-        clientId: data.clientId,
-        amount: Number(data.amount),
-        method: data.paymentMethod,
-        paidAt: new Date(),
-        slug,
-      })
+    toast.dismiss(toastWaiting)
 
-      toast.dismiss(toastWaiting)
-
-      if (result.success) {
-        toast.success('Pagamento cadastrado com successo')
-        router.push(`/dashboard/pagamentos`)
-      } else {
-        toast.error(result.error)
-      }
-    } catch (error) {
-      toast.error('Error ao cadastrar o pagamento')
-      console.error(error)
+    if (result.success) {
+      toast.success('Pagamento cadastrado com successo')
+      router.push(`/dashboard/pagamentos`)
+    } else {
+      toast.error(result.error)
     }
   }
 

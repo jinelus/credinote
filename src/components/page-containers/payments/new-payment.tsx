@@ -30,7 +30,7 @@ export const NewPaymentContainer = async ({
 
   return (
     <Container>
-      <CreatePaymentForm slug={organization.slug} client={clientFetched} />
+      <CreatePaymentForm slug={organization.slug} client={clientFetched} key={Date.now()} />
     </Container>
   )
 }

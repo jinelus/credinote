@@ -28,7 +28,7 @@ export const NewOrderPageContainer = async ({
 
   return (
     <Container className="min-h-screen">
-      <CreateOrderForm slug={organization.slug} client={clientFetched} />
+      <CreateOrderForm slug={organization.slug} client={clientFetched} key={Date.now()} />
     </Container>
   )
 }

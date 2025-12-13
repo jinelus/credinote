@@ -79,8 +79,11 @@ export async function addOrder({ slug, clientId, total, description }: AddOrderP
       },
     })
 
-    updateTag(`clients-${organization.slug}`)
+    updateTag(`orders-${slug}`)
+    updateTag(`client-${client.id}`)
     updateTag(`client-details-${client.id}`)
+    updateTag(`orders-payments-${slug}`)
+    updateTag(`top-clients-${slug}`)
 
     return {
       success: true,
