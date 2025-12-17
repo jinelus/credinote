@@ -46,12 +46,9 @@ export const ClientPageContainer = async ({ params, searchParams }: ClientPageCo
     notFound()
   }
 
-  const { client, events, maxPage } = response.data
+  const { client, events, maxPage, totalOrders, totalPayments } = response.data
 
   const outstandingBalance = client.amount
-
-  const ordersCount = events.filter((event) => event.type === 'order').length
-  const paymentsCount = events.filter((event) => event.type === 'payment').length
 
   return (
     <Container className="py-8">
@@ -70,12 +67,12 @@ export const ClientPageContainer = async ({ params, searchParams }: ClientPageCo
         <div className="grid items-start gap-4 md:grid-cols-3">
           <Card className="p-6">
             <h3 className="font-medium text-foreground text-sm">Pedidos</h3>
-            <p className="text-muted-foreground text-sm">{ordersCount} pedido(s) registrados</p>
+            <p className="text-muted-foreground text-sm">{totalOrders} pedido(s) registrados</p>
           </Card>
           <Card className="p-6">
             <h3 className="font-medium text-foreground text-sm">Pagamentos</h3>
             <p className="text-muted-foreground text-sm">
-              {paymentsCount} pagamento(s) registrados
+              {totalPayments} pagamento(s) registrados
             </p>
           </Card>
           <Card className="p-6">
