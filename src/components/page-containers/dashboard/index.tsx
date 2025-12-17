@@ -15,28 +15,28 @@ const quickActions = [
   {
     title: 'Novo Cliente',
     description: 'Cadastre um novo cliente',
-    icon: <Plus className="h-6 w-6" />,
+    icon: <Plus className="size-4" />,
     href: `/dashboard/novo-cliente`,
     color: 'bg-blue-500',
   },
   {
     title: 'Lista de Clientes',
     description: 'Visualize todos os clientes',
-    icon: <Users className="h-6 w-6" />,
+    icon: <Users className="size-4" />,
     href: `/dashboard/clientes`,
     color: 'bg-green-500',
   },
   {
     title: 'Nova Compra',
     description: 'Cadastre um nova compra',
-    icon: <Package className="h-6 w-6" />,
+    icon: <Package className="size-4" />,
     href: `/dashboard/nova-compra`,
     color: 'bg-purple-500',
   },
   {
     title: 'Novo Pagamento',
     description: 'Registre novo pagamento',
-    icon: <HandCoins className="h-6 w-6" />,
+    icon: <HandCoins className="size-4" />,
     href: `/dashboard/novo-pagamento`,
     color: 'bg-orange-500',
   },
@@ -60,8 +60,8 @@ export const DashboardPageContainer = async () => {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {quickActions.map((action) => (
             <Card key={action.title} className="p-4 transition-shadow hover:shadow-lg">
-              <Link href={action.href as Route} className="flex items-center justify-center gap-4">
-                <div className={`rounded-lg p-3 ${action.color} text-white`}>{action.icon}</div>
+              <Link href={action.href as Route} className="flex items-center justify-center gap-3">
+                <div className={`rounded-lg p-2 ${action.color} text-white`}>{action.icon}</div>
                 <div className="flex flex-col">
                   <h1 className="font-semibold text-foreground text-lg">{action.title}</h1>
                   <p className="mt-1 text-muted-foreground text-sm">{action.description}</p>
