@@ -446,6 +446,8 @@ export async function getClientDetails({
         totalEvents,
         maxPage,
         currentPage: page,
+        totalOrders: ordersCount,
+        totalPayments: paymentsCount,
       },
     }
   })
