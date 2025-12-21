@@ -14,7 +14,7 @@ import { RecentOrdersTable, RecentOrdersTableSkeleton } from './table'
 const quickActions = [
   {
     title: 'Novo Cliente',
-    description: 'Cadastre um novo cliente',
+    description: 'Registre novo cliente',
     icon: <Plus className="size-4" />,
     href: `/dashboard/novo-cliente`,
     color: 'bg-blue-500',
@@ -28,7 +28,7 @@ const quickActions = [
   },
   {
     title: 'Nova Compra',
-    description: 'Cadastre um nova compra',
+    description: 'Registre nova compra',
     icon: <Package className="size-4" />,
     href: `/dashboard/nova-compra`,
     color: 'bg-purple-500',
@@ -57,7 +57,7 @@ export const DashboardPageContainer = async () => {
           <ChartsContainer slug={organization.slug} />
         </Suspense>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {quickActions.map((action) => (
             <Card key={action.title} className="p-4 transition-shadow hover:shadow-lg">
               <Link href={action.href as Route} className="flex items-center justify-center gap-3">
