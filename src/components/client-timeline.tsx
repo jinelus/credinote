@@ -39,7 +39,6 @@ function TimelineItem({ event }: { event: TimelineEvent }) {
 
   return (
     <div className="relative">
-      {/* Icon Indicator */}
       <div
         className={`-left-[29px] absolute top-1 flex h-8 w-8 items-center justify-center rounded-full border-4 border-background ${
           isOrder ? 'bg-indigo-100 text-indigo-600' : 'bg-emerald-100 text-emerald-600'
@@ -48,7 +47,6 @@ function TimelineItem({ event }: { event: TimelineEvent }) {
         {isOrder ? <ShoppingBag className="h-4 w-4" /> : <CreditCard className="h-4 w-4" />}
       </div>
 
-      {/* Card Content */}
       <div className="group rounded-xl border bg-card p-4 transition-all hover:shadow-md">
         <div className="mb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
