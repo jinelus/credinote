@@ -23,13 +23,11 @@ export const DownloadReportButton = () => {
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
 
-      // Get filename from Content-Disposition header or use default
       const contentDisposition = response.headers.get('content-disposition')
       const filenameMatch = contentDisposition?.match(/filename="(.+)"/)
       const filename =
         filenameMatch?.[1] || `relatorio-clientes-${new Date().toISOString().split('T')[0]}.pdf`
 
-      // Create download link and trigger download
       const link = document.createElement('a')
       link.href = url
       link.download = filename
@@ -59,7 +57,7 @@ export const DownloadReportButton = () => {
       className="flex items-center justify-center gap-2"
     >
       <FileDown className="h-4 w-4" />
-      {isDownloading ? 'Gerando...' : 'Relatório PDF'}
+      {isDownloading ? 'Gerando...' : 'Gerar Relatório'}
     </Button>
   )
 }
