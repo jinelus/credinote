@@ -52,7 +52,7 @@ export async function addOrder({ slug, clientId, total, description }: AddOrderP
 
     const isBeen3Months = dayjs(Date.now()).diff(mustRecentPayment?.paidAt, 'month') >= 3
 
-    if (Number(client.amount) > 99.99 && isBeen3Months) {
+    if (Number(client.amount) > 99.99 && (!mustRecentPayment || isBeen3Months)) {
       return {
         success: false,
         error:
