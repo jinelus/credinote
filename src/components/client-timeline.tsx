@@ -1,8 +1,14 @@
 import type { PaymentMethod } from '@prisma/client'
 import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import { Calendar, CreditCard, ShoppingBag } from 'lucide-react'
 import { formatCurrency } from '@/src/lib/utils'
 import { formatPaymentMethod } from '../utils/format'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.utc('2024-01-15T23:00:00').tz('America/Sao_Paulo').format('HH:mm')
 
 export type TimelineEvent = {
   id: string
